@@ -9,9 +9,9 @@ import lejos.hardware.sensor.EV3TouchSensor;
 
 public class PlotterKlient{
 	public static void main (String[] args){
-		EV3LargeRegulatedMotor motorX = new EV3LargeRegulatedMotor(MotorPort.A);
-		EV3LargeRegulatedMotor motorY = new EV3LargeRegulatedMotor(MotorPort.B);
-		NXTRegulatedMotor motorZ = null;
+		NXTRegulatedMotor motorX = new NXTRegulatedMotor(MotorPort.A);
+		NXTRegulatedMotor motorY = new NXTRegulatedMotor(MotorPort.B);
+		EV3LargeRegulatedMotor motorZ = null;
 		EV3TouchSensor endestoppX = new EV3TouchSensor(SensorPort.S1);
 		EV3TouchSensor endestoppY = new EV3TouchSensor(SensorPort.S2);
 		int hjulDiameter = 41;

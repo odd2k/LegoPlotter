@@ -22,6 +22,8 @@ public class Plotter{
 
 	private boolean pennNede = false; // Her kommer det en pennVelger
 
+	
+	
 	private EV3LargeRegulatedMotor motorX;
 	private EV3LargeRegulatedMotor motorY;
 	private NXTRegulatedMotor motorZ;
@@ -40,8 +42,7 @@ public class Plotter{
 		this.endestoppX = endestoppX;
 		this.endestoppY = endestoppY;
 		this.hjulDiameter = hjulDiameter;
-		}
-		
+		}	
 		home();
 	}
 	
