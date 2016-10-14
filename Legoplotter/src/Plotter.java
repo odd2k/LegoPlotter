@@ -1,4 +1,3 @@
-package src;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
@@ -103,12 +102,8 @@ public class Plotter{
 	}
 	//TODO: Lag metoden!
 	private void move(int x1, int y1){
-		
-		
-		//motorX.forward((360/(Matt.PI*hjulDiameter))*x1);
+		motorX.forward();
 		motorY.forward();
-		
-		
 	}
 	//TODO: Lag metoden!
 	private void pennNed(){
@@ -140,6 +135,16 @@ public class Plotter{
 		}else{
 			return false;
 		}
+	}
+	
+	private int graderTilMillimeter(int grader){
+		int millimeter = (int)Math.round((360/(Math.PI*hjulDiameter))*grader);
+		return millimeter;
+	}
+	
+	private int millimeterTilGrader(int millimeter){
+		int grader = (int)Math.round((360/(Math.PI*hjulDiameter))*millimeter);
+		return grader;
 	}
 	
 }
