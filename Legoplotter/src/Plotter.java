@@ -1,6 +1,5 @@
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.motor.Motor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3TouchSensor;
@@ -14,6 +13,7 @@ public class Plotter{
 
 	private int hjulDiameter = 1;
 	private double utveksling = 1;// girutveksling på 3:4 gir en double med verdi ¾
+	private float makshastighet;
 
 	private int margTopp = 0; // mm
 	private int margHoyre = 0; // mm
@@ -22,17 +22,15 @@ public class Plotter{
 
 	private boolean pennNede = false; // Her kommer det en pennVelger
 
-	
-	
-	private EV3LargeRegulatedMotor motorX;
-	private EV3LargeRegulatedMotor motorY;
-	private NXTRegulatedMotor motorZ;
+	private NXTRegulatedMotor motorX;
+	private NXTRegulatedMotor motorY;
+	private EV3LargeRegulatedMotor motorZ;
 	private EV3TouchSensor endestoppX;
 	private EV3TouchSensor endestoppY;
 	private float[] sample = new float[1];
 	
 	
-	public Plotter(EV3LargeRegulatedMotor motorX, EV3LargeRegulatedMotor motorY, NXTRegulatedMotor motorZ, EV3TouchSensor endestoppX, EV3TouchSensor endestoppY,int hjulDiameter){
+	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, EV3TouchSensor endestoppX, EV3TouchSensor endestoppY,int hjulDiameter){
 		if(hjulDiameter <= 0){
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
 		}else{
@@ -42,8 +40,7 @@ public class Plotter{
 		this.endestoppX = endestoppX;
 		this.endestoppY = endestoppY;
 		this.hjulDiameter = hjulDiameter;
-		}	
-		home();
+		}
 	}
 	
 	public void settMarger(int margTopp, int margHoyre, int margBunn, int margVenstre){
@@ -86,7 +83,7 @@ public class Plotter{
 		
 	}
 	
-	private void home(){
+	private void Home(){
 		boolean xHjemme = false;
 		boolean yHjemme = false;
 		motorX.backward();
@@ -106,8 +103,8 @@ public class Plotter{
 	}
 	//TODO: Lag metoden!
 	private void move(int x1, int y1){
-		motorX.forward();
-		motorY.forward();
+		motorX.rotate(millimeterTilGrader(x1), true);
+		motorY.rotate(millimeterTilGrader(y1), true);
 	}
 	//TODO: Lag metoden!
 	private void pennNed(){
