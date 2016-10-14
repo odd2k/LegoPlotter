@@ -41,6 +41,8 @@ public class Plotter{
 		this.endestoppY = endestoppY;
 		this.hjulDiameter = hjulDiameter;
 		}
+		
+		home();
 	}
 	
 	public void settMarger(int margTopp, int margHoyre, int margBunn, int margVenstre){
@@ -83,7 +85,7 @@ public class Plotter{
 		
 	}
 	
-	private void Home(){
+	private void home(){
 		boolean xHjemme = false;
 		boolean yHjemme = false;
 		motorX.backward();
@@ -121,21 +123,13 @@ public class Plotter{
 	}
 	
 	private boolean endestoppXTryktNed(){
-		sample[0] = endestoppX.sampleSize();
-		if(sample[0]==1){
-			return true;
-		}else{
-			return false;
-		}
+		endestoppX.fetchSample(sample, 0);
+		return (sample[0]==1);
 	}
 	
 	private boolean endestoppYTryktNed(){
-		sample[0] = endestoppY.sampleSize();
-		if(sample[0]==1){
-			return true;
-		}else{
-			return false;
-		}
+		endestoppY.fetchSample(sample, 0);
+		return (sample[0]==1);
 	}
 	
 	private int graderTilMillimeter(int grader){

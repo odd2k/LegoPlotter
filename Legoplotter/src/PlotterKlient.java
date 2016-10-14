@@ -8,6 +8,9 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3TouchSensor;
 
 public class PlotterKlient{
+	
+	static Plotter plotter;
+	
 	public static void main (String[] args){
 		NXTRegulatedMotor motorX = new NXTRegulatedMotor(MotorPort.A);
 		NXTRegulatedMotor motorY = new NXTRegulatedMotor(MotorPort.B);
@@ -16,7 +19,7 @@ public class PlotterKlient{
 		EV3TouchSensor endestoppY = new EV3TouchSensor(SensorPort.S2);
 		int hjulDiameter = 41;
 		
-		Plotter p = new Plotter(motorX, motorY, motorZ, endestoppX, endestoppY, hjulDiameter);
+		plotter = new Plotter(motorX, motorY, motorZ, endestoppX, endestoppY, hjulDiameter);
 		
 		Button.ENTER.waitForPressAndRelease();
 	}
