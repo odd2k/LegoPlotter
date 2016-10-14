@@ -1,3 +1,4 @@
+package src;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
@@ -26,7 +27,7 @@ public class Plotter{
 	private NXTRegulatedMotor motorZ;
 	private EV3TouchSensor endestoppX;
 	private EV3TouchSensor endestoppY;
-	private float[] sampe = new float[1];
+	private float[] sample = new float[1];
 	
 	
 	public Plotter(EV3LargeRegulatedMotor motorX, EV3LargeRegulatedMotor motorY, NXTRegulatedMotor motorZ, EV3TouchSensor endestoppX, EV3TouchSensor endestoppY,int hjulDiameter){
@@ -104,7 +105,8 @@ public class Plotter{
 	private void move(int x1, int y1){
 		
 		
-		(360/(Matt.PI*hjulDiameter))*x1;
+		//motorX.forward((360/(Matt.PI*hjulDiameter))*x1);
+		motorY.forward();
 		
 		
 	}

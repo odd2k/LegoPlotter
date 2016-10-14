@@ -13,7 +13,7 @@ public class PlotterKlient{
 		EV3TouchSensor endestoppY;
 		int hjulDiameter = 1;
 		
-		Plotter p = new Plotter(motorX, motorY, motorZ, endestoppX, endestoppY, hjulDiameter);
+		//Plotter p = new Plotter(motorX, motorY, motorZ, endestoppX, endestoppY, hjulDiameter);
 		
 	}
 }
