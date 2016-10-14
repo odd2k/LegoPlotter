@@ -1,5 +1,6 @@
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.Motor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3TouchSensor;
@@ -40,6 +41,8 @@ public class Plotter{
 		this.endestoppY = endestoppY;
 		this.hjulDiameter = hjulDiameter;
 		}
+		
+		home();
 	}
 	
 	public void settMarger(int margTopp, int margHoyre, int margBunn, int margVenstre){
@@ -82,7 +85,7 @@ public class Plotter{
 		
 	}
 	
-	private void Home(){
+	private void home(){
 		boolean xHjemme = false;
 		boolean yHjemme = false;
 		motorX.backward();
