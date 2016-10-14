@@ -104,7 +104,7 @@ public class Plotter{
 	private void move(int x1, int y1){
 		
 		
-		360=pi*hjulDiameter
+		(360/(Matt.PI*hjulDiameter))*x1;
 		
 		
 	}
