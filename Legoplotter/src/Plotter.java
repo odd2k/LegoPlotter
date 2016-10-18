@@ -60,17 +60,28 @@ public class Plotter{
 		
 	}
 
-	//TODO: Lag metoden!
+	
 	public void tegnPrikk(int x1, int y1){
-		
+		move(x1,y1);
+		pennNed();
+		pennOpp();
 	}
-	//TODO: Lag metoden!
+	
 	public void tegnLinje(int x1, int y1, int x2, int y2){
-		
+		move(x1,y1);
+		pennNed();
+		move(x2-x1,y2-y1);
+		pennOpp();
 	}
-	//TODO: Lag metoden!
+	
 	public void tegnFirkant(int x1, int y1, int bredde, int hoyde){
-		
+		move(x1,y1);
+		pennNed();
+		move(0,hoyde);
+		move(bredde,0);
+		move(0,-hoyde);
+		move(-bredde,0);
+		pennOpp();
 	}
 	//TODO: Lag metoden!
 	public void tegnOval(int x1, int y2, int bredde, int hoyde){
@@ -84,41 +95,45 @@ public class Plotter{
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){
 		
 	}
-	
+	//TODO: Fiks metoden.
 	private void home(){
 		boolean xHjemme = false;
 		boolean yHjemme = false;
 		motorX.backward();
 		motorY.backward();
 		while(!xHjemme && !yHjemme){
-			if(endestoppXTryktNed()){
+			xHjemme = endestoppXTryktNed();
+			if(xHjemme){
 				motorX.stop();
 				x = 0;
-				xHjemme = true;
 			}
-			if(endestoppYTryktNed()){
+			yHjemme = endestoppYTryktNed();
+			if(yHjemme){
 				motorY.stop();
 				y = 0;
-				yHjemme = true;
 			}
 		}
 	}
-	//TODO: Lag metoden!
+	//TODO: Gjør metoden avansert!
 	private void move(int x1, int y1){
 		motorX.rotate(millimeterTilGrader(x1), true);
 		motorY.rotate(millimeterTilGrader(y1), true);
+		x += x1;
+		y += y1;
 	}
-	//TODO: Lag metoden!
+	//TODO: Sjekk konstanten
 	private void pennNed(){
 		if(pennNede == false){
-			
+			motorZ.rotate(180);
+			pennNede = true;
 		}
 		
 	}
-	//TODO: Lag metoden!
+	//TODO: Sjekk konstanten
 	private void pennOpp(){
 		if(pennNede == true){
-			
+			motorZ.rotate(-180);
+			pennNede = false;
 		}
 	}
 	
@@ -133,7 +148,7 @@ public class Plotter{
 	}
 	
 	private int graderTilMillimeter(int grader){
-		int millimeter = (int)Math.round((360/(Math.PI*hjulDiameter))*grader);
+		int millimeter = (int)Math.round(((Math.PI*hjulDiameter)/360)*grader);
 		return millimeter;
 	}
 	
