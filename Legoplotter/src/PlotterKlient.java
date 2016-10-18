@@ -6,6 +6,7 @@ import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3TouchSensor;
+import lejos.robotics.SampleProvider;
 
 public class PlotterKlient{
 	
@@ -15,8 +16,8 @@ public class PlotterKlient{
 		NXTRegulatedMotor motorX = new NXTRegulatedMotor(MotorPort.A);
 		NXTRegulatedMotor motorY = new NXTRegulatedMotor(MotorPort.B);
 		EV3LargeRegulatedMotor motorZ = null;
-		EV3TouchSensor endestoppX = new EV3TouchSensor(SensorPort.S1);
-		EV3TouchSensor endestoppY = new EV3TouchSensor(SensorPort.S2);
+		SampleProvider endestoppX = new EV3TouchSensor(SensorPort.S1);
+		SampleProvider endestoppY = new EV3TouchSensor(SensorPort.S2);
 		int hjulDiameter = 41;
 		
 		plotter = new Plotter(motorX, motorY, motorZ, endestoppX, endestoppY, hjulDiameter);

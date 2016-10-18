@@ -25,12 +25,12 @@ public class Plotter{
 	private NXTRegulatedMotor motorX;
 	private NXTRegulatedMotor motorY;
 	private EV3LargeRegulatedMotor motorZ;
-	private EV3TouchSensor endestoppX;
-	private EV3TouchSensor endestoppY;
+	private SampleProvider endestoppX;
+	private SampleProvider endestoppY;
 	private float[] sample = new float[1];
 	
 	
-	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, EV3TouchSensor endestoppX, EV3TouchSensor endestoppY,int hjulDiameter){
+	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, SampleProvider endestoppX, SampleProvider endestoppY,int hjulDiameter){
 		if(hjulDiameter <= 0){
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
 		}else{
@@ -99,20 +99,36 @@ public class Plotter{
 	private void home(){
 		boolean xHjemme = false;
 		boolean yHjemme = false;
+		motorX.forward();
+		motorY.forward();
+		int teller = 0;
+		while(!xHjemme){
+			motorX.backward();
+			teller++;
+			if(endestoppXTryktNed()){
+				motorX.stop();
+				xHjemme = true;
+			}
+			System.out.println(endestoppXTryktNed());
+			System.out.println(teller);
+		}
+		
+		/*
 		motorX.backward();
 		motorY.backward();
-		while(!xHjemme && !yHjemme){
-			xHjemme = endestoppXTryktNed();
-			if(xHjemme){
+		while(!xHjemme || !yHjemme){
+			if(endestoppXTryktNed()){
 				motorX.stop();
 				x = 0;
+				xHjemme = true;
 			}
-			yHjemme = endestoppYTryktNed();
-			if(yHjemme){
+			if(endestoppYTryktNed()){
 				motorY.stop();
 				y = 0;
+				yHjemme = true;
 			}
 		}
+		*/
 	}
 	//TODO: Gjør metoden avansert!
 	private void move(int x1, int y1){
