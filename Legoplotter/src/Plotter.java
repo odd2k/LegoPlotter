@@ -2,7 +2,7 @@
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.EV3TouchSensor;
+import lejos.hardware.sensor.NXTTouchSensor;
 import lejos.robotics.SampleProvider;
 
 public class Plotter{
@@ -25,12 +25,12 @@ public class Plotter{
 	private NXTRegulatedMotor motorX;
 	private NXTRegulatedMotor motorY;
 	private EV3LargeRegulatedMotor motorZ;
-	private SampleProvider endestoppX;
-	private SampleProvider endestoppY;
+	private NXTTouchSensor endestoppX;
+	private NXTTouchSensor endestoppY;
 	private float[] sample = new float[1];
 	
 	
-	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, SampleProvider endestoppX, SampleProvider endestoppY,int hjulDiameter){
+	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, NXTTouchSensor endestoppX, NXTTouchSensor endestoppY,int hjulDiameter){
 		if(hjulDiameter <= 0){
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
 		}else{
@@ -95,25 +95,10 @@ public class Plotter{
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){
 		
 	}
-	//TODO: Fiks metoden.
+	
 	private void home(){
 		boolean xHjemme = false;
 		boolean yHjemme = false;
-		motorX.forward();
-		motorY.forward();
-		int teller = 0;
-		while(!xHjemme){
-			motorX.backward();
-			teller++;
-			if(endestoppXTryktNed()){
-				motorX.stop();
-				xHjemme = true;
-			}
-			System.out.println(endestoppXTryktNed());
-			System.out.println(teller);
-		}
-		
-		/*
 		motorX.backward();
 		motorY.backward();
 		while(!xHjemme || !yHjemme){
@@ -128,7 +113,7 @@ public class Plotter{
 				yHjemme = true;
 			}
 		}
-		*/
+		
 	}
 	//TODO: Gjør metoden avansert!
 	private void move(int x1, int y1){
