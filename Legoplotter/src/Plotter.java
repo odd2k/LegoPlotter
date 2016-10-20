@@ -3,17 +3,18 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.NXTTouchSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.robotics.SampleProvider;
 
 public class Plotter{
-	private int A4_X = 210;
-	private int A4_Y = 297;
+	private int A4_X = 210; // I millimeter
+	private int A4_Y = 297;	// I millimeter
 	private int x; // kortsida - 0-210mm
 	private int y; // langsida - 0-297mm
 
-	private int hjulDiameter = 1;
+	private int hjulDiameter;
 	private double utveksling = 1;// girutveksling på 3:4 gir en double med verdi ¾
-	private float makshastighet;
+	private int makshastighet = 50;
 
 	private int margTopp = 0; // mm
 	private int margHoyre = 0; // mm
@@ -27,10 +28,11 @@ public class Plotter{
 	private EV3LargeRegulatedMotor motorZ;
 	private NXTTouchSensor endestoppX;
 	private NXTTouchSensor endestoppY;
+	private EV3TouchSensor endestoppZ;
 	private float[] sample = new float[1];
 	
 	
-	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, NXTTouchSensor endestoppX, NXTTouchSensor endestoppY,int hjulDiameter){
+	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, NXTTouchSensor endestoppX, NXTTouchSensor endestoppY, EV3TouchSensor endestoppZ, int hjulDiameter){
 		if(hjulDiameter <= 0){
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
 		}else{
@@ -39,7 +41,11 @@ public class Plotter{
 		this.motorZ = motorZ;
 		this.endestoppX = endestoppX;
 		this.endestoppY = endestoppY;
+		this.endestoppZ = endestoppZ;
 		this.hjulDiameter = hjulDiameter;
+		motorX.setSpeed(makshastighet);
+		motorY.setSpeed(makshastighet);
+		//motorZ.setSpeed(makshastighet);
 		}
 		
 		home();
@@ -54,6 +60,10 @@ public class Plotter{
 	
 	public void settUtveksling(double utveksling){
 		this.utveksling = utveksling;
+	}
+	
+	public void settMakshastighet(int makshastighet){
+		this.makshastighet = makshastighet;
 	}
 	//TODO: Lag metoden!
 	public void velgPenn(int valgtPenn){// sendes til pennVelger.velgPenn
@@ -70,17 +80,17 @@ public class Plotter{
 	public void tegnLinje(int x1, int y1, int x2, int y2){
 		move(x1,y1);
 		pennNed();
-		move(x2-x1,y2-y1);
+		move(x2,y2);
 		pennOpp();
 	}
 	
 	public void tegnFirkant(int x1, int y1, int bredde, int hoyde){
 		move(x1,y1);
 		pennNed();
-		move(0,hoyde);
-		move(bredde,0);
-		move(0,-hoyde);
-		move(-bredde,0);
+		move(x1,y1 + hoyde);
+		move(x1 + bredde,y1 + hoyde);
+		move(x1 + bredde,y1);
+		move(x1,y1);
 		pennOpp();
 	}
 	//TODO: Lag metoden!
@@ -99,8 +109,8 @@ public class Plotter{
 	private void home(){
 		boolean xHjemme = false;
 		boolean yHjemme = false;
-		motorX.backward();
-		motorY.backward();
+		motorX.forward();// Framover er bakover.
+		motorY.forward();// Framover er bakover.
 		while(!xHjemme || !yHjemme){
 			if(endestoppXTryktNed()){
 				motorX.stop();
@@ -116,24 +126,46 @@ public class Plotter{
 		
 	}
 	//TODO: Gjør metoden avansert!
-	private void move(int x1, int y1){
-		motorX.rotate(millimeterTilGrader(x1), true);
-		motorY.rotate(millimeterTilGrader(y1), true);
-		x += x1;
-		y += y1;
+	private void move(int x1, int y1){// Flytt til kordinat.
+		/*
+		if(x + x1 > A4_X - (margVenstre + margHoyre)|| y + y1 > A4_Y - (margTopp + margBunn)){
+			throw new IllegalArgumentException("For stor verdi!");
+		}else{
+			motorX.rotate(millimeterTilGrader(x1), true);
+			motorY.rotate(millimeterTilGrader(y1), true);
+			x += x1;
+			y += y1;
+		}
+		*/
+		if(x1 - x> A4_X - (margVenstre + margHoyre)|| x1 - x < 0 || y1 - y > A4_Y - (margTopp + margBunn)|| y1 - y < 0){
+			if(x1 - x > A4_X - (margVenstre + margHoyre)|| x1 - x < 0){
+				throw new IllegalArgumentException("For stor X verdi!");
+			}
+			if(y1 - y > A4_X - (margTopp + margBunn)|| y1 - y < 0){
+				throw new IllegalArgumentException("For stor Y verdi!");
+			}
+		}else{
+			motorX.rotate(millimeterTilGrader(-(x1-x)), true);// Bakover er framover.
+			motorY.rotate(millimeterTilGrader(-(y1-y)), true);// Bakover er framover.
+			x = x1;
+			y = y1;
+		}
 	}
 	//TODO: Sjekk konstanten
 	private void pennNed(){
-		if(pennNede == false){
-			motorZ.rotate(180);
-			pennNede = true;
+		while(!pennNede){
+			motorZ.forward();
+			if(endestoppZTryktNed()){
+				motorZ.stop();
+				pennNede = true;
+			}
 		}
 		
 	}
 	//TODO: Sjekk konstanten
 	private void pennOpp(){
 		if(pennNede == true){
-			motorZ.rotate(-180);
+			motorZ.rotate(180);
 			pennNede = false;
 		}
 	}
@@ -145,6 +177,11 @@ public class Plotter{
 	
 	private boolean endestoppYTryktNed(){
 		endestoppY.fetchSample(sample, 0);
+		return (sample[0]==1);
+	}
+	
+	private boolean endestoppZTryktNed(){
+		endestoppZ.fetchSample(sample, 0);
 		return (sample[0]==1);
 	}
 	
