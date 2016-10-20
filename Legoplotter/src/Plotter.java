@@ -25,6 +25,7 @@ public class Plotter{
 
 	private NXTRegulatedMotor motorX;
 	private NXTRegulatedMotor motorY;
+	private NXTRegulatedMotor motorY2;
 	private EV3LargeRegulatedMotor motorZ;
 	private NXTTouchSensor endestoppX;
 	private NXTTouchSensor endestoppY;
@@ -32,12 +33,14 @@ public class Plotter{
 	private float[] sample = new float[1];
 	
 	
-	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, NXTTouchSensor endestoppX, NXTTouchSensor endestoppY, EV3TouchSensor endestoppZ, double hjulDiameter){
+	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, NXTRegulatedMotor motorY2, EV3LargeRegulatedMotor motorZ, 
+			NXTTouchSensor endestoppX, NXTTouchSensor endestoppY, EV3TouchSensor endestoppZ, double hjulDiameter){
 		if(hjulDiameter <= 0){
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
 		}else{
 		this.motorX = motorX;
 		this.motorY = motorY;
+		this.motorY2 = motorY2;
 		this.motorZ = motorZ;
 		this.endestoppX = endestoppX;
 		this.endestoppY = endestoppY;
@@ -45,6 +48,7 @@ public class Plotter{
 		this.hjulDiameter = hjulDiameter;
 		motorX.setSpeed(makshastighet);
 		motorY.setSpeed(makshastighet);
+		motorY2.setSpeed(makshastighet);
 		//motorZ.setSpeed(makshastighet);
 		}
 		
@@ -111,6 +115,7 @@ public class Plotter{
 		boolean yHjemme = false;
 		motorX.forward();// Framover er bakover.
 		motorY.forward();// Framover er bakover.
+		motorY2.forward(); //bakover er framover :)
 		while(!xHjemme || !yHjemme){
 			if(endestoppXTryktNed()){
 				motorX.stop();
@@ -119,6 +124,7 @@ public class Plotter{
 			}
 			if(endestoppYTryktNed()){
 				motorY.stop();
+				motorY2.stop();
 				y = 0;
 				yHjemme = true;
 			}
@@ -172,25 +178,27 @@ public class Plotter{
 			
 			if(diffX > diffY && diffY > 0){
 				motorY.setSpeed(makshastighet);
+				motorY2.setSpeed(makshastighet);
 				motorX.setSpeed((int) (makshastighet * ((double)diffX / diffY)) );
 			}
 			else if(diffY > diffX && diffX > 0){
 				motorY.setSpeed((int) (makshastighet * ((double)diffY / diffX)) );
+				motorY2.setSpeed((int) (makshastighet * ((double)diffY / diffX)) );
 				motorX.setSpeed(makshastighet);
 			}
 			else{
 				motorX.setSpeed(makshastighet);
 				motorY.setSpeed(makshastighet);
+				motorY2.setSpeed(makshastighet);
 			}
 			
 			
 			motorX.rotate(millimeterTilGrader(-diffX), true);// Bakover er framover.
 			motorY.rotate(millimeterTilGrader(-diffY), true);// Bakover er framover.
+			motorY2.rotate(millimeterTilGrader(-diffY), true);// bakover er framover :).
 			
 			// Ikke hopp ut av metoden før motorene har sluttet å bevege seg, og pennen er over (x1,y1)
-			while(motorX.isMoving() || motorY.isMoving()){}
-			
-			
+			while(motorX.isMoving() || motorY.isMoving() || motorY2.isMoving()){}
 			
 			x = x1;
 			y = y1;

@@ -16,28 +16,29 @@ public class PlotterKlient{
 	public static void main (String[] args){
 		NXTRegulatedMotor motorX = new NXTRegulatedMotor(MotorPort.A);
 		NXTRegulatedMotor motorY = new NXTRegulatedMotor(MotorPort.B);
+		NXTRegulatedMotor motorY2 = new NXTRegulatedMotor(MotorPort.C);
 		EV3LargeRegulatedMotor motorZ = null;
 		NXTTouchSensor endestoppX = new NXTTouchSensor(SensorPort.S2);
 		NXTTouchSensor endestoppY = new NXTTouchSensor(SensorPort.S1);
 		EV3TouchSensor endestoppZ = null;
 		double hjulDiameter = 39.46;// I millimeter
 		
-		plotter = new Plotter(motorX, motorY, motorZ, endestoppX, endestoppY, endestoppZ, hjulDiameter);
+		plotter = new Plotter(motorX, motorY, motorY2, motorZ, endestoppX, endestoppY, endestoppZ, hjulDiameter);
 
 		int x = 0;
 		
 		while(true){
 			System.out.println("Trykk ENTER for å bevege penn");
 			Button.ENTER.waitForPressAndRelease();
-			plotter.move(0, x);
-			plotter.move(150, x);
+			plotter.move(x, 0);
+			plotter.move(x, 200);
 			
 			x += 10;
 			
 			System.out.println("Trykk ENTER for å bevege penn");
 			Button.ENTER.waitForPressAndRelease();
-			plotter.move(150, x);
-			plotter.move(0, x);
+			plotter.move(x, 200);
+			plotter.move(x, 0);
 			
 			x += 10;
 		}
