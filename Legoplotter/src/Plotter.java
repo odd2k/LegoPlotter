@@ -125,6 +125,17 @@ public class Plotter{
 		}
 		
 	}
+	
+	// Returnerer bredde på det området på arket som ligger innenfor margene
+	private int getBredde(){
+		return A4_X - (margVenstre + margHoyre);
+	}
+	
+	// Returnerer høyde på det området på arket som ligger innenfor margene
+	private int getHoyde(){
+		return A4_Y - (margTopp + margBunn);
+	}
+	
 	//TODO: Gjør metoden avansert!
 	private void move(int x1, int y1){// Flytt til kordinat.
 		/*
@@ -137,20 +148,29 @@ public class Plotter{
 			y += y1;
 		}
 		*/
-		if(x1 - x> A4_X - (margVenstre + margHoyre)|| x1 - x < 0 || y1 - y > A4_Y - (margTopp + margBunn)|| y1 - y < 0){
-			if(x1 - x > A4_X - (margVenstre + margHoyre)|| x1 - x < 0){
-				throw new IllegalArgumentException("For stor X verdi!");
-			}
-			if(y1 - y > A4_X - (margTopp + margBunn)|| y1 - y < 0){
-				throw new IllegalArgumentException("For stor Y verdi!");
-			}
-		}else{
-			motorX.rotate(millimeterTilGrader(-(x1-x)), true);// Bakover er framover.
-			motorY.rotate(millimeterTilGrader(-(y1-y)), true);// Bakover er framover.
+		
+		int diffX = x1 - x;
+		int diffY = y1 - y;
+		int bredde = getBredde();
+		int hoyde = getHoyde();
+		
+		if( (x1 < 0 || x1 > bredde) && (y1 < 0 || y1 > hoyde)){
+			throw new IllegalArgumentException("X og Y-verdier utenfor område! x1: " + x1 + " bredde: " + bredde + " y1: " + y1 + "hoyde: " + hoyde);
+		}
+		else if(x1 < 0 || x1 > bredde){
+			throw new IllegalArgumentException("X-verdi utenfor område! x1: " + x1 + " bredde: " + bredde);
+		}
+		else if(y1 < 0 || y1 > hoyde){
+			throw new IllegalArgumentException("Y-verdi utenfor område! y1: " + y1 + " høyde: " + hoyde);
+		}
+		else{
+			motorX.rotate(millimeterTilGrader(-diffX), true);// Bakover er framover.
+			motorY.rotate(millimeterTilGrader(-diffY), true);// Bakover er framover.
 			x = x1;
 			y = y1;
 		}
 	}
+	
 	//TODO: Sjekk konstanten
 	private void pennNed(){
 		while(!pennNede){
