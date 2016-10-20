@@ -13,7 +13,6 @@ public class Plotter{
 	private int y; // langsida - 0-297mm
 
 	private double hjulDiameter;
-	private double utveksling = 1;// girutveksling på 3:4 gir en double med verdi ¾
 	private int makshastighet = 50;
 
 	private int margTopp = 0; // mm
@@ -60,10 +59,6 @@ public class Plotter{
 		this.margBunn = margBunn;
 		this.margHoyre = margHoyre;
 		this.margVenstre = margVenstre;
-	}
-	
-	public void settUtveksling(double utveksling){
-		this.utveksling = utveksling;
 	}
 	
 	public void settMakshastighet(int makshastighet){
