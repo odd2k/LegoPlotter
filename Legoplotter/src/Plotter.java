@@ -166,6 +166,10 @@ public class Plotter{
 		else{
 			motorX.rotate(millimeterTilGrader(-diffX), true);// Bakover er framover.
 			motorY.rotate(millimeterTilGrader(-diffY), true);// Bakover er framover.
+			
+			// Ikke hopp ut av metoden før motorene har sluttet å bevege seg, og pennen er over (x1,y1)
+			while(motorX.isMoving() || motorY.isMoving()){}
+			
 			x = x1;
 			y = y1;
 		}
