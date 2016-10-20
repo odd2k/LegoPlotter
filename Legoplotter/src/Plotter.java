@@ -137,7 +137,7 @@ public class Plotter{
 	}
 	
 	//TODO: Gjør metoden avansert!
-	private void move(int x1, int y1){// Flytt til kordinat.
+	public void move(int x1, int y1){// Flytt til kordinat.
 		/*
 		if(x + x1 > A4_X - (margVenstre + margHoyre)|| y + y1 > A4_Y - (margTopp + margBunn)){
 			throw new IllegalArgumentException("For stor verdi!");
@@ -151,6 +151,7 @@ public class Plotter{
 		
 		int diffX = x1 - x;
 		int diffY = y1 - y;
+		
 		int bredde = getBredde();
 		int hoyde = getHoyde();
 		
@@ -164,11 +165,32 @@ public class Plotter{
 			throw new IllegalArgumentException("Y-verdi utenfor område! y1: " + y1 + " høyde: " + hoyde);
 		}
 		else{
+			
+			// Om bevegelse i X-retning er 3 ganger større enn i y-retning, skal
+			// motor Y bevege seg 3 ganger så langsomt som X.
+			// Om den ene bevegelsen er 0, er ikke dette så nøye.
+			
+			if(diffX > diffY && diffY > 0){
+				motorX.setSpeed(makshastighet);
+				motorY.setSpeed((int) (makshastighet * ((double)diffX / diffY)) );
+			}
+			else if(diffY > diffX && diffX > 0){
+				motorX.setSpeed((int) (makshastighet * ((double)diffY / diffX)) );
+				motorY.setSpeed(makshastighet);
+			}
+			else{
+				motorX.setSpeed(makshastighet);
+				motorY.setSpeed(makshastighet);
+			}
+			
+			
 			motorX.rotate(millimeterTilGrader(-diffX), true);// Bakover er framover.
 			motorY.rotate(millimeterTilGrader(-diffY), true);// Bakover er framover.
 			
 			// Ikke hopp ut av metoden før motorene har sluttet å bevege seg, og pennen er over (x1,y1)
 			while(motorX.isMoving() || motorY.isMoving()){}
+			
+			
 			
 			x = x1;
 			y = y1;
