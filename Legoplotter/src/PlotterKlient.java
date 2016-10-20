@@ -20,12 +20,26 @@ public class PlotterKlient{
 		NXTTouchSensor endestoppX = new NXTTouchSensor(SensorPort.S2);
 		NXTTouchSensor endestoppY = new NXTTouchSensor(SensorPort.S1);
 		EV3TouchSensor endestoppZ = null;
-		int hjulDiameter = 41;// I millimeter
+		double hjulDiameter = 39.46;// I millimeter
 		
 		plotter = new Plotter(motorX, motorY, motorZ, endestoppX, endestoppY, endestoppZ, hjulDiameter);
-		plotter.tegnLinje(15, 30, 45, 30);
-		plotter.tegnLinje(45, 30, 15, 60);
+
+		int x = 0;
 		
-		Button.ENTER.waitForPressAndRelease();
+		while(true){
+			System.out.println("Trykk ENTER for å bevege penn");
+			Button.ENTER.waitForPressAndRelease();
+			plotter.move(0, x);
+			plotter.move(150, x);
+			
+			x += 10;
+			
+			System.out.println("Trykk ENTER for å bevege penn");
+			Button.ENTER.waitForPressAndRelease();
+			plotter.move(150, x);
+			plotter.move(0, x);
+			
+			x += 10;
+		}
 	}
 }

@@ -12,7 +12,7 @@ public class Plotter{
 	private int x; // kortsida - 0-210mm
 	private int y; // langsida - 0-297mm
 
-	private int hjulDiameter;
+	private double hjulDiameter;
 	private double utveksling = 1;// girutveksling på 3:4 gir en double med verdi ¾
 	private int makshastighet = 50;
 
@@ -32,7 +32,7 @@ public class Plotter{
 	private float[] sample = new float[1];
 	
 	
-	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, NXTTouchSensor endestoppX, NXTTouchSensor endestoppY, EV3TouchSensor endestoppZ, int hjulDiameter){
+	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, EV3LargeRegulatedMotor motorZ, NXTTouchSensor endestoppX, NXTTouchSensor endestoppY, EV3TouchSensor endestoppZ, double hjulDiameter){
 		if(hjulDiameter <= 0){
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
 		}else{
@@ -171,12 +171,12 @@ public class Plotter{
 			// Om den ene bevegelsen er 0, er ikke dette så nøye.
 			
 			if(diffX > diffY && diffY > 0){
-				motorX.setSpeed(makshastighet);
-				motorY.setSpeed((int) (makshastighet * ((double)diffX / diffY)) );
+				motorY.setSpeed(makshastighet);
+				motorX.setSpeed((int) (makshastighet * ((double)diffX / diffY)) );
 			}
 			else if(diffY > diffX && diffX > 0){
-				motorX.setSpeed((int) (makshastighet * ((double)diffY / diffX)) );
-				motorY.setSpeed(makshastighet);
+				motorY.setSpeed((int) (makshastighet * ((double)diffY / diffX)) );
+				motorX.setSpeed(makshastighet);
 			}
 			else{
 				motorX.setSpeed(makshastighet);
