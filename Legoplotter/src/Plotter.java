@@ -97,8 +97,13 @@ public class Plotter{
 		
 	}
 	//TODO: Lag metoden!
-	public void tegnSirkel(int x1, int y2, int radius){
-		
+	public void tegnSirkel(int x1, int y1, int radius){
+		for(int deg = 0; deg<=360; deg++){
+			double rad = Math.toRadians(deg);
+			int x = (int) Math.round(x1 + radius * Math.cos(rad));
+			int y = (int) Math.round(y1 + radius * Math.sin(rad));
+			move(x, y);
+		}
 	}
 	//TODO: Lag metoden!
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){

@@ -25,22 +25,6 @@ public class PlotterKlient{
 		
 		plotter = new Plotter(motorX, motorY, motorY2, motorZ, endestoppX, endestoppY, endestoppZ, hjulDiameter);
 
-		int x = 0;
-		
-		while(true){
-			System.out.println("Trykk ENTER for å bevege penn");
-			Button.ENTER.waitForPressAndRelease();
-			plotter.move(x, 0);
-			plotter.move(x, 200);
-			
-			x += 10;
-			
-			System.out.println("Trykk ENTER for å bevege penn");
-			Button.ENTER.waitForPressAndRelease();
-			plotter.move(x, 200);
-			plotter.move(x, 0);
-			
-			x += 10;
-		}
+		plotter.tegnSirkel(10,  10, 5);
 	}
 }
