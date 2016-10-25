@@ -23,8 +23,8 @@ public class PlotterKlient{
 		EV3TouchSensor endestoppZ = null;
 		double hjulDiameter = 39.46;// I millimeter
 		
-		plotter = new Plotter(motorX, motorY, motorY2, motorZ, endestoppX, endestoppY, endestoppZ, hjulDiameter);
+		plotter = new Plotter(motorX, motorY, motorY2, motorZ, endestoppX, endestoppY, endestoppZ, hjulDiameter, 24.0f/40.0f, 1.0f/2.0f);
 
-		plotter.tegnSirkel(10,  10, 5);
+		plotter.tegnSirkel(100,  100, 30);
 	}
 }

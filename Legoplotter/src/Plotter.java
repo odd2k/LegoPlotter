@@ -13,7 +13,10 @@ public class Plotter{
 	private int y; // langsida - 0-297mm
 
 	private double hjulDiameter;
+	private double utvekslingX, utvekslingY;
+	
 	private int makshastighet = 50;
+	
 
 	private int margTopp = 0; // mm
 	private int margHoyre = 0; // mm
@@ -33,7 +36,7 @@ public class Plotter{
 	
 	
 	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, NXTRegulatedMotor motorY2, EV3LargeRegulatedMotor motorZ, 
-			NXTTouchSensor endestoppX, NXTTouchSensor endestoppY, EV3TouchSensor endestoppZ, double hjulDiameter){
+			NXTTouchSensor endestoppX, NXTTouchSensor endestoppY, EV3TouchSensor endestoppZ, double hjulDiameter, double utvekslingX, double utvekslingY){
 		if(hjulDiameter <= 0){
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
 		}else{
@@ -45,6 +48,10 @@ public class Plotter{
 		this.endestoppY = endestoppY;
 		this.endestoppZ = endestoppZ;
 		this.hjulDiameter = hjulDiameter;
+		
+		this.utvekslingX = utvekslingX;
+		this.utvekslingY = utvekslingY;
+		
 		motorX.setSpeed(makshastighet);
 		motorY.setSpeed(makshastighet);
 		motorY2.setSpeed(makshastighet);
@@ -97,14 +104,19 @@ public class Plotter{
 		
 	}
 	//TODO: Lag metoden!
+	
 	public void tegnSirkel(int x1, int y1, int radius){
 		for(int deg = 0; deg<=360; deg++){
 			double rad = Math.toRadians(deg);
 			int x = (int) Math.round(x1 + radius * Math.cos(rad));
 			int y = (int) Math.round(y1 + radius * Math.sin(rad));
+			System.out.println("Move(" + x + ", " + y + ")");
 			move(x, y);
 		}
 	}
+
+	
+	
 	//TODO: Lag metoden!
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){
 		
@@ -113,9 +125,9 @@ public class Plotter{
 	private void home(){
 		boolean xHjemme = false;
 		boolean yHjemme = false;
-		motorX.forward();// Framover er bakover.
-		motorY.forward();// Framover er bakover.
-		motorY2.forward(); //bakover er framover :)
+		motorX.backward();// bakover er bakover.
+		motorY.backward();// bakover er bakover.
+		motorY2.backward(); //bakover er bakover :)
 		while(!xHjemme || !yHjemme){
 			if(endestoppXTryktNed()){
 				motorX.stop();
@@ -193,9 +205,9 @@ public class Plotter{
 			}
 			
 			
-			motorX.rotate(millimeterTilGrader(-diffX), true);// Bakover er framover.
-			motorY.rotate(millimeterTilGrader(-diffY), true);// Bakover er framover.
-			motorY2.rotate(millimeterTilGrader(-diffY), true);// bakover er framover :).
+			motorX.rotate(millimeterTilGrader(diffX, utvekslingX), true);// framover er framover.
+			motorY.rotate(millimeterTilGrader(diffY, utvekslingY), true);// framover er framover.
+			motorY2.rotate(millimeterTilGrader(diffY, utvekslingY), true);// bakover er framover :).
 			
 			// Ikke hopp ut av metoden før motorene har sluttet å bevege seg, og pennen er over (x1,y1)
 			while(motorX.isMoving() || motorY.isMoving() || motorY2.isMoving()){}
@@ -239,13 +251,13 @@ public class Plotter{
 		return (sample[0]==1);
 	}
 	
-	private int graderTilMillimeter(int grader){
-		int millimeter = (int)Math.round(((Math.PI*hjulDiameter)/360)*grader);
+	private int graderTilMillimeter(int grader, double utveksling){
+		int millimeter = (int)Math.round((Math.PI * hjulDiameter * grader * utveksling) / (360));
 		return millimeter;
 	}
 	
-	private int millimeterTilGrader(int millimeter){
-		int grader = (int)Math.round((360/(Math.PI*hjulDiameter))*millimeter);
+	private int millimeterTilGrader(int millimeter, double utveksling){
+		int grader = (int)Math.round((360 * millimeter) / (Math.PI * hjulDiameter * utveksling));
 		return grader;
 	}
 	
