@@ -30,11 +30,11 @@ public class PennVelger {
 		
 	}
 	
-	//TODO: Sjekk konstanten
+	//TODO: Test metoden
 	public void ned(){
 		if(!pennNede){
+			motorZ.backward();
 			while(!pennNede){
-				motorZ.forward();
 				if(endestoppZTryktNed()){
 					motorZ.stop();
 					pennNede = true;
@@ -43,12 +43,15 @@ public class PennVelger {
 		}
 		
 	}
-	//TODO: Sjekk konstanten
+	//TODO: Test metoden
 	public void opp(){
 		if(pennNede == true){
+			motorZ.backward();
 			while(pennNede){
-				motorZ.rotate(180);
-				pennNede = false;
+				if(!endestoppZTryktNed()){
+					motorZ.stop();
+					pennNede = false;
+				}
 			}
 		}
 	}

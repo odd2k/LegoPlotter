@@ -108,9 +108,18 @@ public class Plotter{
 	//TODO: Lag metoden!
 	public void tegnOval(int x1, int y1, int bredde, int hoyde){
 		sjekkMarg(x1,y1,x1+bredde,y1+hoyde);
+		int radiusX = bredde/2;
+		int radiusY = hoyde/2;
+		for(int deg = 0; deg<=360; deg++){
+			double rad = Math.toRadians(deg);
+			int x = (int) Math.round(x1 + radiusX * Math.cos(rad));
+			int y = (int) Math.round(y1 + radiusY * Math.sin(rad));
+			System.out.println("Move(" + x + ", " + y + ")");
+			move(x, y);
+		}
 	}
-	//TODO: Lag metoden!
 	
+	//TODO: Finn en annen løsning
 	public void tegnSirkel(int x1, int y1, int radius){
 		sjekkMarg(x1-radius,y1-radius,x1+radius,y1+radius);
 		for(int deg = 0; deg<=360; deg++){
@@ -126,7 +135,8 @@ public class Plotter{
 	
 	//TODO: Lag metoden!
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){
-		
+		sjekkMarg(x1,y1,x2,y2);
+		move(x1,y1);
 	}
 	
 	private void home(){
