@@ -15,7 +15,7 @@ public class Plotter{
 	private double hjulDiameter;
 	private double utvekslingX, utvekslingY;
 	
-	private int makshastighet = 50;
+	private int makshastighet = 150;
 	
 
 	private int margTopp = 0; // mm
@@ -74,12 +74,13 @@ public class Plotter{
 	public void settMakshastighet(int makshastighet){
 		this.makshastighet = makshastighet;
 	}
+	/*
 	//TODO: Lag metoden!
 	public void velgPenn(int valgtPenn){// sendes til pennVelger.velgPenn
 		
 	}
 
-	
+	*/
 	public void tegnPrikk(int x1, int y1){
 		sjekkMarg(x1,y1,x1,y1);
 		move(x1,y1);
@@ -105,7 +106,8 @@ public class Plotter{
 		move(x1,y1);
 		penn.opp();
 	}
-	//TODO: Lag metoden!
+	
+	//TODO: Forbedre metoden
 	public void tegnOval(int x1, int y1, int bredde, int hoyde){
 		sjekkMarg(x1,y1,x1+bredde,y1+hoyde);
 		int radiusX = bredde/2;
@@ -136,7 +138,31 @@ public class Plotter{
 	//TODO: Lag metoden!
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){
 		sjekkMarg(x1,y1,x2,y2);
-		move(x1,y1);
+		//move(x1,y1);
+		double radius = Math.abs((((h^3)/2d)+(((double)h*Math.sqrt(((x2-x1)^2)+((y2-y1)^2)))/4)));
+		double bue = 2*(Math.sin(1-(h/radius)));
+		/* vektor en = (x2-x1,y2-y1)
+		 * vektor to = (y2-y1,-(x2-x1))
+		 * midtpunkt t = |vektor en|/2+x1;
+		 * senter i sirkel(s) = t + (radius-h) * vektor to;
+		 */
+		int tx = Math.round((x1+x2)/2);
+		int ty = Math.round((y1+y2)/2);
+		double k = radius/(Math.abs((x2-x1)^2)+((y2-y1)^2));
+		int xs = (int)Math.round(k*(y2-y1));// X senter
+		int ys = (int)Math.round(k*(-(x2-x1)));// Y senter
+		for(int deg = 0; deg<=360; deg++){
+			double rad = Math.toRadians(deg);
+			int x = (int) Math.round(xs + radius * Math.cos(rad));//denne delen stemmer ikke
+			int y = (int) Math.round(ys + radius * Math.sin(rad));//nøkkelord: vektorregning!
+			if((h > 0 && x >= x1 || x >= x2 && y >= y1 || y>= y2)||(h < 0 && x <= x1 || x <= x2 && y <= y1 || y <= y2)){
+				System.out.println("Move(" + x + ", " + y + ")");
+				move(x, y);
+			} else {
+				System.out.println("Can't make it!");
+			}
+		}
+		System.out.println(bue);
 	}
 	
 	private void home(){
@@ -187,9 +213,6 @@ public class Plotter{
 		int diffX = x1 - x;
 		int diffY = y1 - y;
 		
-		
-		
-			
 		// Om bevegelse i X-retning er 3 ganger større enn i y-retning, skal
 		// motor Y bevege seg 3 ganger så langsomt som X.
 		// Om den ene bevegelsen er 0, er ikke dette så nøye.

@@ -3,7 +3,7 @@ import lejos.hardware.sensor.EV3TouchSensor;
 
 public class PennVelger {
 	private int antPenner;
-	private int makshastighet = 50;
+	private int makshastighet = 150;
 	private boolean pennNede = false;
 	
 	private EV3LargeRegulatedMotor motorZ;
