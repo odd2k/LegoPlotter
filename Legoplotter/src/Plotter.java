@@ -198,17 +198,8 @@ public class Plotter{
 	}
 	
 	//TODO: Gjør metoden avansert!
+	//TODO: Bytt til private når vi er ferdig å teste denne?
 	public void move(int x1, int y1){// Flytt til kordinat.
-		/*
-		if(x + x1 > A4_X - (margVenstre + margHoyre)|| y + y1 > A4_Y - (margTopp + margBunn)){
-			throw new IllegalArgumentException("For stor verdi!");
-		}else{
-			motorX.rotate(millimeterTilGrader(x1), true);
-			motorY.rotate(millimeterTilGrader(y1), true);
-			x += x1;
-			y += y1;
-		}
-		*/
 		
 		int diffX = x1 - x;
 		int diffY = y1 - y;
@@ -218,14 +209,14 @@ public class Plotter{
 		// Om den ene bevegelsen er 0, er ikke dette så nøye.
 		
 		if(diffX > diffY && diffY > 0){
-			motorY.setSpeed(makshastighet);
-			motorY2.setSpeed(makshastighet);
-			motorX.setSpeed((int) (makshastighet * ((double)diffX / diffY)) );
+			motorY.setSpeed((int) (makshastighet * ((double)diffY / diffX)));
+			motorY2.setSpeed((int) (makshastighet * ((double)diffY / diffX)));
+			motorX.setSpeed(makshastighet);
 		}
 		else if(diffY > diffX && diffX > 0){
-			motorY.setSpeed((int) (makshastighet * ((double)diffY / diffX)) );
-			motorY2.setSpeed((int) (makshastighet * ((double)diffY / diffX)) );
-			motorX.setSpeed(makshastighet);
+			motorY.setSpeed(makshastighet);
+			motorY2.setSpeed(makshastighet);
+			motorX.setSpeed((int)(makshastighet * ((double)diffX / diffY)));
 		}
 		else{
 			motorX.setSpeed(makshastighet);
