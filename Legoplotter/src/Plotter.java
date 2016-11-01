@@ -371,4 +371,11 @@ public class Plotter{
 		}
 	}
 	
+	// Utfører flere kommandoer
+	public void utforKommando(Kommando[] kommandoer){
+		for(Kommando kommando : kommandoer){
+			utforKommando(kommando);
+		}
+	}
+	
 }
