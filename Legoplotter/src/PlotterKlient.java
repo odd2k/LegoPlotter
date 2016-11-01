@@ -1,13 +1,9 @@
-
-
-import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.NXTTouchSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.robotics.SampleProvider;
 
 public class PlotterKlient{
 	

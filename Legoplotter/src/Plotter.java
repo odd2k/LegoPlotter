@@ -1,10 +1,8 @@
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
-import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.NXTTouchSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.robotics.SampleProvider;
 
 public class Plotter{
 	private int A4_X = 210; // I millimeter
