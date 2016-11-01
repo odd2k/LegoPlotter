@@ -333,4 +333,42 @@ public class Plotter{
 		return grader;
 	}
 	
+	// Brukes for å motta kommandoer over nettverket.
+	// TODO: Implementer pennvelger-funksjonalitet
+	public void utforKommando(Kommando kommando){
+		
+		Kommando.KommandoType type = kommando.getType();
+		int[] args = kommando.getArgs();
+		
+		switch(type){
+			case PRIKK:
+				tegnPrikk(args[0], args[1]);
+				break;
+			case LINJE:
+				tegnLinje(args[0], args[1], args[2], args[3]);
+				break;
+			case FIRKANT:
+				tegnFirkant(args[0], args[1], args[2], args[3]);
+				break;
+			case OVAL:
+				tegnOval(args[0], args[1], args[2], args[3]);
+				break;
+			case SIRKEL:
+				tegnSirkel(args[0], args[1], args[2]);
+				break;
+			case BUE:
+				tegnBue(args[0], args[1], args[2], args[3], args[4]);
+				break;
+			case BYTT_PENN:
+				//TODO: BYTT PENN
+				break;
+			case PENN_NED:
+				//TODO: PENN NED
+				break;
+			case PENN_OPP:
+				//TODO: PENN OPP
+				break;
+		}
+	}
+	
 }
