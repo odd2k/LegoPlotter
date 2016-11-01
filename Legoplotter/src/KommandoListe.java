@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 // Bruk KommandoListe.add(Kommando) for å legge til kommandoer i lista
 public class KommandoListe extends ArrayList<Kommando>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6368457580328239864L;
 	private ArrayList<Kommando> kommandoer = new ArrayList<Kommando>();
 	
 	// Henter kommandoer fra nettverket.
