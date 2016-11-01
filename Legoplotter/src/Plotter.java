@@ -208,12 +208,12 @@ public class Plotter{
 		// motor Y bevege seg 3 ganger så langsomt som X.
 		// Om den ene bevegelsen er 0, er ikke dette så nøye.
 		
-		if(diffX > diffY && diffY > 0){
+		if(diffX > diffY && diffX > 0){
 			motorY.setSpeed((int) (makshastighet * ((double)diffY / diffX)));
 			motorY2.setSpeed((int) (makshastighet * ((double)diffY / diffX)));
 			motorX.setSpeed(makshastighet);
 		}
-		else if(diffY > diffX && diffX > 0){
+		else if(diffY > diffX && diffY > 0){
 			motorY.setSpeed(makshastighet);
 			motorY2.setSpeed(makshastighet);
 			motorX.setSpeed((int)(makshastighet * ((double)diffX / diffY)));
