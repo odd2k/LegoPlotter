@@ -31,7 +31,7 @@ public class PennVelger {
 	}
 	
 	//TODO: Test metoden
-	public void ned(){
+	public void ned(){/*
 		if(!pennNede){
 			motorZ.backward();
 			while(!pennNede){
@@ -40,11 +40,11 @@ public class PennVelger {
 					pennNede = true;
 				}
 			}
-		}
+		}*/
 		
 	}
 	//TODO: Test metoden
-	public void opp(){
+	public void opp(){/*
 		if(pennNede == true){
 			motorZ.backward();
 			while(pennNede){
@@ -54,6 +54,7 @@ public class PennVelger {
 				}
 			}
 		}
+		*/
 	}
 	private boolean endestoppZTryktNed(){
 		endestoppZ.fetchSample(sample, 0);

@@ -5,8 +5,9 @@ import lejos.hardware.sensor.NXTTouchSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
 
 public class Plotter{
-	private int A4_X = 210; // I millimeter
-	private int A4_Y = 297;	// I millimeter
+	public static int A4_X = 210; // I millimeter
+	public static int A4_Y = 297;	// I millimeter
+	
 	private int x; // kortsida - 0-210mm
 	private int y; // langsida - 0-297mm
 
@@ -15,11 +16,11 @@ public class Plotter{
 	
 	private int makshastighet = 150;
 	
-
-	private int margTopp = 0; // mm
-	private int margHoyre = 0; // mm
-	private int margBunn = 0; // mm
-	private int margVenstre = 0; // mm
+	//OBS: Lekeverdier for å teste designer.
+	public static final int margTopp = 10; // mm
+	public static final int margHoyre = 20; // mm
+	public static final int margBunn = 30; // mm
+	public static final int margVenstre = 10; // mm
 
 	//private boolean pennNede = false; // Her kommer det en pennVelger
 
@@ -60,13 +61,6 @@ public class Plotter{
 		}
 		
 		home();
-	}
-	
-	public void settMarger(int margTopp, int margHoyre, int margBunn, int margVenstre){
-		this.margTopp = margTopp;
-		this.margBunn = margBunn;
-		this.margHoyre = margHoyre;
-		this.margVenstre = margVenstre;
 	}
 	
 	public void settMakshastighet(int makshastighet){
@@ -186,12 +180,12 @@ public class Plotter{
 	}
 	
 	// Returnerer bredde på det området på arket som ligger innenfor margene
-	private int getBredde(){
+	public static int getBredde(){
 		return A4_X - (margVenstre + margHoyre);
 	}
 	
 	// Returnerer høyde på det området på arket som ligger innenfor margene
-	private int getHoyde(){
+	public static int getHoyde(){
 		return A4_Y - (margTopp + margBunn);
 	}
 	
@@ -207,14 +201,14 @@ public class Plotter{
 		// Om den ene bevegelsen er 0, er ikke dette så nøye.
 		
 		if(diffX > diffY && diffX > 0){
-			motorY.setSpeed((int) (makshastighet * ((double)diffY / diffX)));
-			motorY2.setSpeed((int) (makshastighet * ((double)diffY / diffX)));
+			motorY.setSpeed((int) (makshastighet * ((double)(diffY*utvekslingX) / (diffX*utvekslingY))));
+			motorY2.setSpeed((int) (makshastighet * ((double)(diffY*utvekslingX) / (diffX*utvekslingY))));
 			motorX.setSpeed(makshastighet);
 		}
 		else if(diffY > diffX && diffY > 0){
 			motorY.setSpeed(makshastighet);
 			motorY2.setSpeed(makshastighet);
-			motorX.setSpeed((int)(makshastighet * ((double)diffX / diffY)));
+			motorX.setSpeed((int)(makshastighet * ((double)(diffX*utvekslingY) / (diffY*utvekslingX))));
 		}
 		else{
 			motorX.setSpeed(makshastighet);
@@ -281,7 +275,7 @@ public class Plotter{
 			throw new IllegalArgumentException("Y-verdi utenfor område! y2: " + y2 + " høyde: " + hoyde);
 		}
 	}
-	private boolean sjekk(int x1, int y1){
+	public static boolean sjekk(int x1, int y1){
 		int bredde = getBredde();
 		int hoyde = getHoyde();
 		return (x1 < 0 || x1 > bredde && y1 < 0 || y1 > hoyde);
@@ -329,6 +323,8 @@ public class Plotter{
 		Kommando.KommandoType type = kommando.getType();
 		int[] args = kommando.getArgs();
 		
+		System.out.println("Utforer kommando " + kommando);
+		
 		switch(type){
 			case PRIKK:
 				tegnPrikk(args[0], args[1]);
@@ -362,6 +358,7 @@ public class Plotter{
 	
 	// Utfører flere kommandoer
 	public void utforKommandoer(KommandoListe kommandoer){
+		System.out.println("Utforer " + kommandoer.size() + " kommandoer");
 		for(Kommando kommando : kommandoer){
 			utforKommando(kommando);
 		}

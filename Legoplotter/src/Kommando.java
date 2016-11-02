@@ -26,6 +26,8 @@ public class Kommando implements Serializable{
 	public Kommando(KommandoType type, int[] args){
 		this.type = type;
 		
+		this.args = new int[args.length];
+		
 		for(int i = 0; i < args.length; i++){
 			this.args[i] = args[i];
 		}
@@ -110,6 +112,22 @@ public class Kommando implements Serializable{
 	
 	public int[] getArgs(){
 		return args;
+	}
+	
+	public int getArg(int index){
+		return args[index];
+	}
+	
+	public void setArg(int index, int val){
+		args[index] = val;
+	}
+	
+	public String toString(){
+		String toString = "" + type + " ";
+		for(int i = 0; i < args.length; i++){
+			toString += args[i] + " ";
+		}
+		return toString;
 	}
 	
 }

@@ -1,3 +1,6 @@
+import java.io.IOException;
+
+import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.MotorPort;
@@ -9,7 +12,7 @@ public class PlotterKlient{
 	
 	static Plotter plotter;
 	
-	public static void main (String[] args){
+	public static void main (String[] args) throws ClassNotFoundException, IOException{
 		NXTRegulatedMotor motorX = new NXTRegulatedMotor(MotorPort.A);
 		NXTRegulatedMotor motorY = new NXTRegulatedMotor(MotorPort.B);
 		NXTRegulatedMotor motorY2 = new NXTRegulatedMotor(MotorPort.C);
@@ -21,6 +24,10 @@ public class PlotterKlient{
 		
 		plotter = new Plotter(motorX, motorY, motorY2, motorZ, endestoppX, endestoppY, endestoppZ, hjulDiameter, 24.0f/40.0f, 1.0f/2.0f);
 
-		plotter.tegnSirkel(100,  100, 30);
+		System.out.println("Venter pa klient...");
+		
+		plotter.utforKommandoer(KommandoListe.getKommandoListe(1256));
+		
+		Button.ENTER.waitForPressAndRelease();
 	}
 }
