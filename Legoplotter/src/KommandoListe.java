@@ -18,12 +18,10 @@ public class KommandoListe extends ArrayList<Kommando>{
 	 */
 	private static final long serialVersionUID = 6368457580328239864L;
 	
-	public KommandoListe(){
-		super();
-	}
-	
 	// Henter kommandoer fra nettverket.
 	public static KommandoListe getKommandoListe(int portnummer) throws ClassNotFoundException, IOException{
+		
+		KommandoListe kommandoer;
 		
 		ServerSocket server = new ServerSocket(portnummer);
 		
@@ -31,7 +29,11 @@ public class KommandoListe extends ArrayList<Kommando>{
 		
 		ObjectInputStream leseren = new ObjectInputStream(forbindelse.getInputStream());
 		
-		return (KommandoListe) leseren.readObject();
+		kommandoer = (KommandoListe) leseren.readObject();
+		
+		server.close();
+		
+		return kommandoer;
 	}
 	
 	// Send kommandoer over nettverket

@@ -14,7 +14,7 @@ public class Plotter{
 	private double hjulDiameter;
 	private double utvekslingX, utvekslingY;
 	
-	private int makshastighet = 150;
+	private int makshastighet = 20; // millimeter per sekund!
 	
 	//OBS: Lekeverdier for å teste designer.
 	public static final int margTopp = 10; // mm
@@ -52,11 +52,9 @@ public class Plotter{
 		this.utvekslingX = utvekslingX;
 		this.utvekslingY = utvekslingY;
 		
-		motorX.setSpeed(makshastighet);
-		motorY.setSpeed(makshastighet);
-		motorY2.setSpeed(makshastighet);
-		//motorZ.setSpeed(makshastighet);
-		
+		setSpeedX(makshastighet);
+		setSpeedY(makshastighet);
+	
 		this.penn = new PennVelger(motorZ, endestoppZ);
 		}
 		
@@ -193,36 +191,34 @@ public class Plotter{
 	//TODO: Bytt til private når vi er ferdig å teste denne?
 	public void move(int x1, int y1){// Flytt til kordinat.
 		
-		int diffX = x1 - x;
-		int diffY = y1 - y;
+		int lengdeX = Math.abs(x1 - x);
+		int lengdeY = Math.abs(y1 - y);
 		
 		// Om bevegelse i X-retning er 3 ganger større enn i y-retning, skal
 		// motor Y bevege seg 3 ganger så langsomt som X.
 		// Om den ene bevegelsen er 0, er ikke dette så nøye.
 		
-		if(diffX > diffY && diffX > 0){
-			motorY.setSpeed((int) (makshastighet * ((double)(diffY*utvekslingX) / (diffX*utvekslingY))));
-			motorY2.setSpeed((int) (makshastighet * ((double)(diffY*utvekslingX) / (diffX*utvekslingY))));
-			motorX.setSpeed(makshastighet);
+		if(lengdeX > lengdeY && lengdeX > 0){
+			setSpeedX(makshastighet);
+			setSpeedY(makshastighet * (double)lengdeY/lengdeX);
 		}
-		else if(diffY > diffX && diffY > 0){
-			motorY.setSpeed(makshastighet);
-			motorY2.setSpeed(makshastighet);
-			motorX.setSpeed((int)(makshastighet * ((double)(diffX*utvekslingY) / (diffY*utvekslingX))));
+		else if(lengdeY > lengdeX && lengdeY > 0){
+			setSpeedX(makshastighet * (double)lengdeX/lengdeY);
+			setSpeedY(makshastighet);
 		}
 		else{
-			motorX.setSpeed(makshastighet);
-			motorY.setSpeed(makshastighet);
-			motorY2.setSpeed(makshastighet);
+			setSpeedX(makshastighet);
+			setSpeedY(makshastighet);
 		}
 		
+		motorX.resetTachoCount(); motorY.resetTachoCount(); motorY2.resetTachoCount();
 		
-		motorX.rotate(millimeterTilGrader(diffX, utvekslingX), true);// framover er framover.
-		motorY.rotate(millimeterTilGrader(diffY, utvekslingY), true);// framover er framover.
-		motorY2.rotate(millimeterTilGrader(diffY, utvekslingY), true);// bakover er framover :).
+		moveX(lengdeX);
+		moveY(lengdeY);
 		
 		// Ikke hopp ut av metoden før motorene har sluttet å bevege seg, og pennen er over (x1,y1)
-		while(motorX.isMoving() || motorY.isMoving() || motorY2.isMoving()){}
+		while(motorX.getTachoCount() < millimeterTilGrader(lengdeX, utvekslingX) && 
+				motorY.getTachoCount() < millimeterTilGrader(lengdeY, utvekslingY)){}
 		
 		x = x1;
 		y = y1;
@@ -316,12 +312,33 @@ public class Plotter{
 		return grader;
 	}
 	
+	//Tar inn millimeter per sekund
+	private void setSpeedX(double mmps){
+		motorX.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
+	}
+	
+	//Tar inn millimeter per sekund
+	private void setSpeedY(double mmps){
+		motorY.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
+		motorY2.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
+	}
+	
+	private void moveX(int mm){
+		motorX.rotate(millimeterTilGrader(mm, utvekslingX), true);
+	}
+	
+	private void moveY(int mm){
+		motorY.rotate(millimeterTilGrader(mm, utvekslingY), true);
+		motorY2.rotate(millimeterTilGrader(mm, utvekslingY), true);
+	}
+	
 	// Brukes for å motta kommandoer over nettverket.
 	// TODO: Implementer pennvelger-funksjonalitet
 	public void utforKommando(Kommando kommando){
 		
 		Kommando.KommandoType type = kommando.getType();
 		int[] args = kommando.getArgs();
+		penn.velgPenn(kommando.getPenn());
 		
 		System.out.println("Utforer kommando " + kommando);
 		
@@ -345,13 +362,13 @@ public class Plotter{
 				tegnBue(args[0], args[1], args[2], args[3], args[4]);
 				break;
 			case BYTT_PENN:
-				//TODO: BYTT PENN
+				penn.velgPenn(args[0]);
 				break;
 			case PENN_NED:
-				//TODO: PENN NED
+				penn.ned();
 				break;
 			case PENN_OPP:
-				//TODO: PENN OPP
+				penn.opp();
 				break;
 		}
 	}
