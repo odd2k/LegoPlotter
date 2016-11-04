@@ -99,14 +99,13 @@ public class Plotter{
 	
 	//TODO: Forbedre metoden
 	public void tegnOval(int x1, int y1, int bredde, int hoyde){
-		sjekkMarg(x1,y1,x1+bredde,y1+hoyde);
+		sjekkMarg(x1-bredde,y1-hoyde,x1+bredde,y1+hoyde);
 		int radiusX = bredde/2;
 		int radiusY = hoyde/2;
 		for(int deg = 0; deg<=360; deg++){
 			double rad = Math.toRadians(deg);
 			int x = (int) Math.round(x1 + radiusX * Math.cos(rad));
 			int y = (int) Math.round(y1 + radiusY * Math.sin(rad));
-			System.out.println("Move(" + x + ", " + y + ")");
 			move(x, y);
 		}
 	}
@@ -118,7 +117,6 @@ public class Plotter{
 			double rad = Math.toRadians(deg);
 			int x = (int) Math.round(x1 + radius * Math.cos(rad));
 			int y = (int) Math.round(y1 + radius * Math.sin(rad));
-			System.out.println("Move(" + x + ", " + y + ")");
 			move(x, y);
 		}
 	}
@@ -146,7 +144,6 @@ public class Plotter{
 			int x = (int) Math.round(xs + radius * Math.cos(rad));//denne delen stemmer ikke
 			int y = (int) Math.round(ys + radius * Math.sin(rad));//nøkkelord: vektorregning!
 			if((h > 0 && x >= x1 || x >= x2 && y >= y1 || y>= y2)||(h < 0 && x <= x1 || x <= x2 && y <= y1 || y <= y2)){
-				System.out.println("Move(" + x + ", " + y + ")");
 				move(x, y);
 			} else {
 				System.out.println("Can't make it!");
@@ -164,13 +161,13 @@ public class Plotter{
 		while(!xHjemme || !yHjemme){
 			if(endestoppXTryktNed()){
 				motorX.stop();
-				x = 0;
+				x = margVenstre;
 				xHjemme = true;
 			}
 			if(endestoppYTryktNed()){
 				motorY.stop();
 				motorY2.stop();
-				y = 0;
+				y = margTopp;
 				yHjemme = true;
 			}
 		}
@@ -222,6 +219,8 @@ public class Plotter{
 		
 		x = x1;
 		y = y1;
+		
+		System.out.println("x: " + x + "   y: " + y);
 	}
 
 	/*
@@ -272,19 +271,15 @@ public class Plotter{
 		}
 	}
 	public static boolean sjekk(int x1, int y1){
-		int bredde = getBredde();
-		int hoyde = getHoyde();
-		return (x1 < 0 || x1 > bredde && y1 < 0 || y1 > hoyde);
+		return (x1 < margVenstre || x1 > A4_X - margHoyre && y1 < margTopp || y1 > A4_Y - margBunn);
 	}
 	
 	private boolean sjekkX(int x1){
-		int bredde = getBredde();
-		return (x1 < 0 || x1 > bredde);
+		return (x1 < margVenstre || x1 > A4_X - margHoyre);
 	}
 	
 	private boolean sjekkY(int y1){
-		int hoyde = getHoyde();
-		return(y1 < 0 || y1 > hoyde);
+		return(y1 < margTopp || y1 > A4_Y - margBunn);
 	}
 		
 	private boolean endestoppXTryktNed(){

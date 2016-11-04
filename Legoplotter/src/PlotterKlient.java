@@ -1,5 +1,3 @@
-import java.io.IOException;
-
 import lejos.hardware.Button;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
@@ -12,7 +10,7 @@ public class PlotterKlient{
 	
 	static Plotter plotter;
 	
-	public static void main (String[] args) throws ClassNotFoundException, IOException{
+	public static void main (String[] args) throws Exception{
 		NXTRegulatedMotor motorX = new NXTRegulatedMotor(MotorPort.A);
 		NXTRegulatedMotor motorY = new NXTRegulatedMotor(MotorPort.B);
 		NXTRegulatedMotor motorY2 = new NXTRegulatedMotor(MotorPort.C);

@@ -40,7 +40,7 @@ public class KommandoListe extends ArrayList<Kommando>{
 	public void send(String ip, int portnummer) throws SocketTimeoutException, IOException{
 
 		Socket forbindelse = new Socket();
-		forbindelse.connect(new InetSocketAddress(ip, portnummer),5000);
+		forbindelse.connect(new InetSocketAddress(ip, portnummer),3000);
 		
 		ObjectOutputStream skriveren = new ObjectOutputStream(forbindelse.getOutputStream());
 		
