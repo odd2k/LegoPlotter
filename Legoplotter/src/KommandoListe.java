@@ -52,7 +52,12 @@ public class KommandoListe extends ArrayList<Kommando>{
 	}
 	
 	public void lagre(File fil) throws FileNotFoundException, IOException{
-		ObjectOutputStream skriveren = new ObjectOutputStream(new FileOutputStream(fil+".plot"));
+		String filnavn = fil.toString();
+		
+		if(!filnavn.endsWith(".plot"))
+			filnavn += ".plot";
+		
+		ObjectOutputStream skriveren = new ObjectOutputStream(new FileOutputStream(filnavn));
 		
 		skriveren.writeObject(this);
 		
