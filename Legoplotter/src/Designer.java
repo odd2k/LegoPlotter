@@ -1,24 +1,36 @@
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
+import javax.swing.JToolBar.Separator;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.omg.CORBA.INITIALIZE;
+
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,13 +42,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.Enumeration;
 
-public class Designer implements ActionListener, MouseListener, MouseMotionListener{
+public class Designer extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
+
+	private static final long serialVersionUID = -1383411119408529184L;
 
 	private final String PLOTTER_IP = "10.101.101.1";
 	
-	private JFrame frame;
-	Tegning tegning;
+	// Valg av farger til tegning. Grensesnittet utvides automatisk når tabellen utvides.
+	private final Color[] FARGER = new Color[]{Color.BLACK, Color.RED, Color.GREEN, Color.BLUE, Color.ORANGE};
+	
 	public KommandoListe kommandoer = new KommandoListe();
 	public KommandoListe angre_kommandoer = new KommandoListe();
 	
@@ -48,7 +64,6 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 	
 	JButton btnNy, btnApne, btnLagre, btnPrint, btnAngre, btnGjenta;
 	JToggleButton btnPrikk, btnLinje, btnFirkant, btnSirkel, btnOval, btnGrid;
-	JToggleButton btnPenn1, btnPenn2, btnPenn3, btnPenn4;
 	ButtonGroup grpPens;
 	
 	
@@ -56,8 +71,7 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Designer window = new Designer();
-					window.frame.setVisible(true);
+					Designer designer = new Designer();
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -66,112 +80,138 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public Designer() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		//frame.setResizable(false);
+		
+		JFrame frame = new JFrame();
 		frame.setMinimumSize(new Dimension((int)(Plotter.A4_X*3), (int)(Plotter.A4_Y*2.5)));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Plotter-designer");
+		frame.setVisible(true);
 		
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
-		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
+		toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.LINE_AXIS));
+		frame.add(toolBar, BorderLayout.NORTH);
 		
-		btnNy = new JButton("Ny");
+		btnNy = new JButton(new ImageIcon("icons\\file.png"));
 		btnNy.setActionCommand("ny");
+		btnNy.setToolTipText("Ny fil");
 		btnNy.addActionListener(this);
 		toolBar.add(btnNy);
 		
-		btnApne = new JButton("Åpne");
+		btnApne = new JButton(new ImageIcon("icons\\directory.png"));
 		btnApne.setActionCommand("apne");
+		btnApne.setToolTipText("Åpne fil");
 		btnApne.addActionListener(this);
 		toolBar.add(btnApne);
 		
-		btnLagre = new JButton("Lagre");
+		btnLagre = new JButton(new ImageIcon("icons\\floppy_35inch_blue.png"));
 		btnLagre.setActionCommand("lagre");
+		btnLagre.setToolTipText("Lagre fil");
 		btnLagre.addActionListener(this);
 		toolBar.add(btnLagre);
 		
-		btnPrint = new JButton("Print");
+		btnPrint = new JButton(new ImageIcon("icons\\print.png"));
 		btnPrint.setActionCommand("print");
+		btnPrint.setToolTipText("Skriv ut");
 		btnPrint.addActionListener(this);
 		toolBar.add(btnPrint);
 		
+		btnAngre = new JButton(new ImageIcon("icons\\undo_blue.png"));
+		toolBar.add(btnAngre);
+		btnAngre.setActionCommand("angre");
+		btnAngre.setToolTipText("Angre");
+		btnAngre.addActionListener(this);
+		btnAngre.setEnabled(false);
+		
+		btnGjenta = new JButton(new ImageIcon("icons\\redo_blue.png"));
+		toolBar.add(btnGjenta);
+		btnGjenta.setActionCommand("gjenta");
+		btnGjenta.setToolTipText("Gjenta");
+		btnGjenta.addActionListener(this);
+		btnGjenta.setEnabled(false);
+		
+		btnGrid = new JToggleButton(new ImageIcon("icons\\grid_blue.png"));
+		toolBar.add(btnGrid);
+		btnGrid.setToolTipText("Vis rutenett");
+		btnGrid.setSelected(true);
+		btnGrid.addActionListener(this);
+		
+		toolBar.addSeparator();
+		
 		ButtonGroup grpShapes = new ButtonGroup();
 		
-		btnPrikk = new JToggleButton("Prikk");
+		btnPrikk = new JToggleButton(new ImageIcon("icons\\dot_blue.png"));
+		btnPrikk.setToolTipText("Tegn prikk");
 		toolBar.add(btnPrikk);
 		grpShapes.add(btnPrikk);
 		btnPrikk.setSelected(true);
 		
-		btnLinje = new JToggleButton("Linje");
+		btnLinje = new JToggleButton(new ImageIcon("icons\\line_blue.png"));
+		btnLinje.setToolTipText("Tegn linje");
 		toolBar.add(btnLinje);
 		grpShapes.add(btnLinje);
 		
-		btnFirkant = new JToggleButton("Firkant");
+		btnFirkant = new JToggleButton(new ImageIcon("icons\\rectangle_blue.png"));
+		btnFirkant.setToolTipText("Tegn firkant");
 		toolBar.add(btnFirkant);
 		grpShapes.add(btnFirkant);
 		
-		btnSirkel = new JToggleButton("Sirkel");
+		btnSirkel = new JToggleButton(new ImageIcon("icons\\sirkel_blue.png"));
+		btnSirkel.setToolTipText("Tegn sirkel");
 		toolBar.add(btnSirkel);
 		grpShapes.add(btnSirkel);
 		
-		btnOval = new JToggleButton("Oval");
+		
+		btnOval = new JToggleButton(new ImageIcon("icons\\ellipse_blue.png"));
+		btnOval.setToolTipText("Tegn oval");
 		toolBar.add(btnOval);
 		grpShapes.add(btnOval);
 		
-		btnAngre = new JButton("Angre");
-		toolBar.add(btnAngre);
-		btnAngre.setActionCommand("angre");
-		btnAngre.addActionListener(this);
-		btnAngre.setEnabled(false);
-		
-		btnGjenta = new JButton("Gjenta");
-		toolBar.add(btnGjenta);
-		btnGjenta.setActionCommand("gjenta");
-		btnGjenta.addActionListener(this);
-		btnGjenta.setEnabled(false);
-		
-		btnGrid = new JToggleButton("Grid");
-		toolBar.add(btnGrid);
-		btnGrid.setSelected(true);
-		btnGrid.addActionListener(this);
+		toolBar.addSeparator();		
 		
 		grpPens = new ButtonGroup();
 		
-		btnPenn1 = new JToggleButton("1"); btnPenn1.setForeground(Color.BLACK);
-		btnPenn2 = new JToggleButton("2"); btnPenn2.setForeground(Color.RED);
-		btnPenn3 = new JToggleButton("3"); btnPenn3.setForeground(Color.BLUE);
-		btnPenn4 = new JToggleButton("4"); btnPenn4.setForeground(Color.GREEN);
+		for(int i = 0; i < FARGER.length; i++){
+			JToggleButton btn = new JToggleButton();
+			btn.setOpaque(true);
+			btn.setBackground(FARGER[i]);
+			btn.setActionCommand(""+ (i+1) );
+			btn.setMaximumSize(new Dimension(31,31));
+			toolBar.add(btn);
+			grpPens.add(btn);
+			
+			//Trykk inn den første farge-knappen
+			if(i == 0)
+				btn.setSelected(true);
+		}
 		
-		toolBar.add(btnPenn1); toolBar.add(btnPenn2); toolBar.add(btnPenn3); toolBar.add(btnPenn4);
-		grpPens.add(btnPenn1); grpPens.add(btnPenn2); grpPens.add(btnPenn3); grpPens.add(btnPenn4);
-		btnPenn1.setSelected(true);
+		setBackground(Color.WHITE);
+		setFocusable(true);
+		addMouseListener(this);
+		addMouseMotionListener(this);
 		
-		tegning = new Tegning(this);
-		tegning.setBackground(Color.WHITE);
-		tegning.setFocusable(true);
-		tegning.addMouseListener(this);
-		tegning.addMouseMotionListener(this);
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control Z"),"angre");
+		getActionMap().put("angre", new AngreAction(this));
 		
-		tegning.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control Z"),"angre");
-		tegning.getActionMap().put("angre", new AngreAction(this));
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control Y"),"gjenta");
+		getActionMap().put("gjenta", new GjentaAction(this));
+
+		frame.add(this, BorderLayout.CENTER);
 		
-		tegning.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control Y"),"gjenta");
-		tegning.getActionMap().put("gjenta", new GjentaAction(this));
-		
-		
-		frame.getContentPane().add(tegning, BorderLayout.CENTER);
+		for(Component component: toolBar.getComponents()){
+			if(!(component instanceof Separator)){
+				AbstractButton button = (AbstractButton)component;
+				
+				button.setMargin(new Insets(0,0,0,0));
+			}
+
+			//button.setOpaque(false);
+			//button.setBorder(null);
+			//button.setContentAreaFilled(false);
+			//button.setBorderPainted(false);
+			//button.setContentAreaFilled(false);
+		}
 		
 
 	}
@@ -225,7 +265,7 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 		else if(e.getActionCommand().equals("lagre")){
 			JFileChooser chooser = new JFileChooser();
 			chooser.setFileFilter(new FileNameExtensionFilter("Plotter-filer (.plot)", "plot"));
-			int retval = chooser.showSaveDialog(frame);
+			int retval = chooser.showSaveDialog(getTopLevelAncestor());
 			if(retval == JFileChooser.APPROVE_OPTION){
 				File file = chooser.getSelectedFile();
 				
@@ -243,7 +283,7 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 		else if(e.getActionCommand().equals("apne")){
 			JFileChooser chooser = new JFileChooser();
 			chooser.setFileFilter(new FileNameExtensionFilter("Plotter-filer (.plot)", "plot"));
-			int retval = chooser.showOpenDialog(frame);
+			int retval = chooser.showOpenDialog(getTopLevelAncestor());
 			if(retval == JFileChooser.APPROVE_OPTION){
 				File file = chooser.getSelectedFile();
 				
@@ -265,31 +305,36 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 			}
 		}
 		
-		tegning.repaint();
+		repaint();
 
 	}
 
+	// Finn ut hvilken penn som er valgt ut fra trykknappene (brukes som index mot FARGER[], og 
+	// sendes også over til plotteren som en del av kommandodataene).
+	int getCurPen(){
+		
+		Enumeration<AbstractButton> buttons = grpPens.getElements();
+		AbstractButton button = null; 
+		int curButton = 1;
 	
-	public int getCurPen(){
-		if(btnPenn1.isSelected())
-			return 1;
-		else if(btnPenn2.isSelected())
-			return 2;
-		else if(btnPenn3.isSelected())
-			return 3;
-		else if(btnPenn4.isSelected())
-			return 4;
-		else{
-			return 0;
+		while(buttons.hasMoreElements()){
+			button = buttons.nextElement();
+			
+			if(button.isSelected())
+				return curButton;
+			
+			curButton++;
 		}
-
+		
+		// Ingen av fargeknappene er valgt. Merkelig. Vi returnerer 1, som er vanlig svart.
+		return 1;
 	}
 	
 	@Override
 	public void mousePressed(MouseEvent e){
 		if(SwingUtilities.isLeftMouseButton(e)){
-			x = skalerNedX(e.getX()); x = boundX(x);
-			y = skalerNedY(e.getY()); y = boundY(y);
+			x = skalerNedX(e.getX());
+			y = skalerNedY(e.getY());
 			if(btnPrikk.isSelected())
 				kommando = Kommando.tegnPrikk(x, y, getCurPen());
 			else if(btnLinje.isSelected())
@@ -301,7 +346,7 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 			else if(btnOval.isSelected())
 				kommando = Kommando.tegnOval(x, y, 0, 0, getCurPen());
 			
-			tegning.repaint();
+			repaint();
 		}
 	}
 
@@ -309,10 +354,8 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 	public void mouseDragged(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e)){
 			int x2 = skalerNedX(e.getX());
-			x2 = boundX(x2);
 			
 			int y2 = skalerNedY(e.getY());
-			y2 = boundY(y2);
 			
 			// Distanse mellom punkt der musen ble trykt ned, og punktet der musepekeren er nå.
 			int diffX = Math.abs(x2 - x);
@@ -365,7 +408,7 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 			}
 			
 		}
-		tegning.repaint();
+		repaint();
 	}
 	
 	@Override
@@ -374,13 +417,13 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 			kommandoer.add(kommando);
 			kommando = null;
 			btnAngre.setEnabled(true);
+			
+			angre_kommandoer.clear();
+			
 		}
-		tegning.repaint();
+		repaint();
 	}
 
-	
-	@Override
-	public void mouseClicked(MouseEvent e) {}
 	@Override
 	public void mouseEntered(MouseEvent e) {}
 
@@ -389,51 +432,52 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 
 	@Override
 	public void mouseMoved(MouseEvent e) {}
-
-	private double skaleringX(){
-		return (double)tegning.getWidth() / Plotter.A4_X;
-	}
-
-	private double skaleringY(){
-		return (double)tegning.getHeight() / Plotter.A4_Y;
-	}
 	
+	@Override
+	public void mouseClicked(MouseEvent e) {}
 	
+	// Oversetter fra Y-koordinat på A4-ark til y-koordinat på skjerm
 	public int skalerOppX(int x){
-		return (int)Math.round(x*skaleringX());
+		double skaleringX = (double)getWidth() / Plotter.A4_X;
+		
+		return (int)Math.round(x * skaleringX);
 	}
 	
-	public int skalerNedX(int x){
-		return (int)Math.round(x/skaleringX());
-	}
-	
+	// Oversetter fra Y-koordinat på A4-ark til y-koordinat på skjerm
 	public int skalerOppY(int y){
-		return (int)Math.round(y*skaleringY());
+		double skaleringY = (double)getHeight() / Plotter.A4_Y;
+		
+		return (int)Math.round(y*skaleringY);
 	}
 	
-	public int skalerNedY(int y){
-		return (int)Math.round(y/skaleringY());
-	}
-	
-	private int boundX(int x){
+	// Oversetter fra X-koordinat på skjerm til y-koordinat på A4-ark
+	public int skalerNedX(int x){
+		double skaleringX = (double)getWidth() / Plotter.A4_X;
+		
+		x = (int)Math.round(x/skaleringX);
 		x = Math.max(Plotter.margVenstre, x);
 		x = Math.min(Plotter.A4_X - Plotter.margHoyre, x);
 		
 		return x;
 	}
-	
-	private int boundY(int y){
+
+	// Oversetter fra Y-koordinat på skjerm til y-koordinat på A4-ark
+	public int skalerNedY(int y){
+		double skaleringY = (double)getHeight() / Plotter.A4_Y;
+		 
+		y =  (int)Math.round(y/skaleringY);
 		y = Math.max(Plotter.margTopp, y);
 		y = Math.min(Plotter.A4_Y - Plotter.margBunn, y);
 		
 		return y;
 	}
+	
 
 	public void angre(){
 		if(!kommandoer.isEmpty()){
 			angre_kommandoer.add(kommandoer.get(kommandoer.size()-1));
 			kommandoer.remove(kommandoer.size()-1);
-			tegning.repaint();
+			repaint();
 			
 			btnGjenta.setEnabled(true);
 			
@@ -446,7 +490,7 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 		if(!angre_kommandoer.isEmpty()){
 			kommandoer.add(angre_kommandoer.get(angre_kommandoer.size()-1));
 			angre_kommandoer.remove(angre_kommandoer.size()-1);
-			tegning.repaint();
+			repaint();
 			
 			btnAngre.setEnabled(true);
 			
@@ -455,18 +499,6 @@ public class Designer implements ActionListener, MouseListener, MouseMotionListe
 		}
 	}
 
-}
-
-
-
-class Tegning extends JPanel{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7019883647777777385L;
-	private Designer designer;
-	
 	public void paintComponent(Graphics g){
 		
 		Graphics2D g2d = (Graphics2D)g;
@@ -478,74 +510,54 @@ class Tegning extends JPanel{
 		
 		g2d.setColor(new Color(240,240,240));
 		
-		if(designer.btnGrid.isSelected()){
+		if(btnGrid.isSelected()){
 			for(int x = 0; x < Plotter.A4_X; x+=10){
-				g2d.drawLine(designer.skalerOppX(x), 0, designer.skalerOppX(x), getHeight());
+				g2d.drawLine(skalerOppX(x), 0, skalerOppX(x), getHeight());
 			}
 			for(int y = 0; y < Plotter.A4_Y; y+=10){
-				g2d.drawLine(0, designer.skalerOppY(y), getWidth(), designer.skalerOppY(y));
+				g2d.drawLine(0, skalerOppY(y), getWidth(), skalerOppY(y));
 			}
 		}
 
-		for(Kommando kommando : designer.kommandoer){
+		for(Kommando kommando : kommandoer){
 			utforKommando(kommando, g2d);
 		}
 		
 		//Kommandoen som evt. tegnes i dette øyeblikk, mens brukeren holder nede musen.
-		if(designer.kommando != null){
-			utforKommando(designer.kommando, g2d);
+		if(kommando != null){
+			utforKommando(kommando, g2d);
 		}
 		
 		g2d.setColor(Color.LIGHT_GRAY);
 		float dash[] = {10.0f};
 		g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0));
-		g2d.drawRect(	designer.skalerOppX(Plotter.margVenstre),
-				designer.skalerOppY(Plotter.margTopp), 
-				this.getWidth() - designer.skalerOppX(Plotter.margVenstre + Plotter.margHoyre),
-				this.getHeight() - designer.skalerOppY(Plotter.margTopp + Plotter.margBunn));
+		g2d.drawRect(	skalerOppX(Plotter.margVenstre),
+				skalerOppY(Plotter.margTopp), 
+				this.getWidth() - skalerOppX(Plotter.margVenstre + Plotter.margHoyre),
+				this.getHeight() - skalerOppY(Plotter.margTopp + Plotter.margBunn));
 	}
-
-	
-	public Tegning(Designer designer){
-		this.designer = designer;
-	}
-
 	
 	public void utforKommando(Kommando kommando, Graphics2D g2d){
 		
 		Kommando.KommandoType type = kommando.getType();
 		int[] args = kommando.getArgs();
 		
-		switch(kommando.getPenn()){
-			case 1:
-			default:
-				g2d.setColor(designer.btnPenn1.getForeground());
-				break;
-			case 2:
-				g2d.setColor(designer.btnPenn2.getForeground());
-				break;
-			case 3:
-				g2d.setColor(designer.btnPenn3.getForeground());
-				break;
-			case 4:
-				g2d.setColor(designer.btnPenn4.getForeground());
-				break;
-		}
+		g2d.setColor(FARGER[kommando.getPenn()-1]);
 		g2d.setStroke(new BasicStroke(2));
 		
 		switch(type){
 			case PRIKK:{
-				int x = designer.skalerOppX(args[0]);
-				int y = designer.skalerOppY(args[1]);
+				int x = skalerOppX(args[0]);
+				int y = skalerOppY(args[1]);
 				g2d.fillOval(x-5,y-5,10,10);
 				break;
 			}
 			
 			case LINJE:{
-				g2d.drawLine(	designer.skalerOppX(args[0]),
-						designer.skalerOppY(args[1]),
-						designer.skalerOppX(args[2]),
-						designer.skalerOppY(args[3]));
+				g2d.drawLine(	skalerOppX(args[0]),
+						skalerOppY(args[1]),
+						skalerOppX(args[2]),
+						skalerOppY(args[3]));
 				break;
 			}
 			case FIRKANT:{
@@ -559,27 +571,27 @@ class Tegning extends JPanel{
 				if(args[3] < 0){
 					y1 -= hoyde;
 				}
-				g2d.drawRect(	designer.skalerOppX(x1),
-								designer.skalerOppY(y1),
-								designer.skalerOppX(bredde),
-								designer.skalerOppY(hoyde));
+				g2d.drawRect(	skalerOppX(x1),
+								skalerOppY(y1),
+								skalerOppX(bredde),
+								skalerOppY(hoyde));
 				break;
 			}
 
 			case OVAL:
-				int x = designer.skalerOppX(args[0]-args[2]);
-				int y = designer.skalerOppY(args[1]-args[3]);
-				int bredde = designer.skalerOppX(args[2]*2);
-				int hoyde = designer.skalerOppY(args[3]*2);
+				int x = skalerOppX(args[0]-args[2]);
+				int y = skalerOppY(args[1]-args[3]);
+				int bredde = skalerOppX(args[2]*2);
+				int hoyde = skalerOppY(args[3]*2);
 				
 				g2d.drawOval(x, y, bredde, hoyde);
 				//TODO: tegnOval(args[0], args[1], args[2], args[3]);
 				break;
 			case SIRKEL:{
-				int x1 = designer.skalerOppX(args[0]-args[2]);
-				int y1 = designer.skalerOppY(args[1]-args[2]);
-				int breddeX = designer.skalerOppX(2*args[2]);
-				int breddeY = designer.skalerOppY(2*args[2]);
+				int x1 = skalerOppX(args[0]-args[2]);
+				int y1 = skalerOppY(args[1]-args[2]);
+				int breddeX = skalerOppX(2*args[2]);
+				int breddeY = skalerOppY(2*args[2]);
 				g2d.drawOval(x1, y1, breddeX, breddeY);
 				//TODO: tegnSirkel(args[0], args[1], args[2]);
 				break;
