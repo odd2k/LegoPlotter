@@ -1,4 +1,4 @@
-
+package src;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.sensor.NXTTouchSensor;
@@ -55,7 +55,7 @@ public class Plotter{
 		setSpeedX(makshastighet);
 		setSpeedY(makshastighet);
 	
-		this.penn = new PennVelger(motorZ, endestoppZ);
+		this.penn = new PennVelger(motorZ);
 		}
 		
 		home();
@@ -71,6 +71,10 @@ public class Plotter{
 	}
 
 	*/
+	public void velgPenn(int nr){
+		penn.velgPenn(nr);
+	}
+	
 	public void tegnPrikk(int x1, int y1){
 		sjekkMarg(x1,y1,x1,y1);
 		move(x1,y1);
@@ -123,33 +127,53 @@ public class Plotter{
 
 	
 	
-	//TODO: Lag metoden!
+	//TODO: Test metoden!
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){
 		sjekkMarg(x1,y1,x2,y2);
 		//move(x1,y1);
-		double radius = Math.abs((((h^3)/2d)+(((double)h*Math.sqrt(((x2-x1)^2)+((y2-y1)^2)))/4)));
+		double radius = ((4*Math.pow(h, 2))+(Math.pow((x2-x1),2)+Math.pow((y2-y1),2)))/(8*h);
 		double bue = 2*(Math.sin(1-(h/radius)));
 		/* vektor en = (x2-x1,y2-y1)
 		 * vektor to = (y2-y1,-(x2-x1))
-		 * midtpunkt t = |vektor en|/2+x1;
-		 * senter i sirkel(s) = t + (radius-h) * vektor to;
+		 * midtpunkt t = |vektor en|/2 + punkt(x1,y1);
+		 * senter i sirkel(s) = t + k * vektor to;
 		 */
-		int tx = Math.round((x1+x2)/2);
+		int tx = Math.round((x1+x2)/2);// h= 20 -> h^2 = 22
 		int ty = Math.round((y1+y2)/2);
-		double k = radius/(Math.abs((x2-x1)^2)+((y2-y1)^2));
-		int xs = (int)Math.round(k*(y2-y1));// X senter
-		int ys = (int)Math.round(k*(-(x2-x1)));// Y senter
+		double k = (h-radius)/(Math.sqrt(Math.pow((x2-x1),2)+(Math.pow((y2-y1),2))));
+		int xs;// X senter
+		int ys;// Y senter
+		move(59,61);
+		penn.ned();
+		xs = (int)Math.round((k*(-y2+y1)) + tx);
+		ys = (int)Math.round((k*(x2-x1)) + ty);
+		//System.out.println("Radius: " + radius + ";");
+		//System.out.println("SenterX: " + xs + ", SenterY: " + ys +";");
 		for(int deg = 0; deg<=360; deg++){
 			double rad = Math.toRadians(deg);
-			int x = (int) Math.round(xs + radius * Math.cos(rad));//denne delen stemmer ikke
-			int y = (int) Math.round(ys + radius * Math.sin(rad));//nøkkelord: vektorregning!
-			if((h > 0 && x >= x1 || x >= x2 && y >= y1 || y>= y2)||(h < 0 && x <= x1 || x <= x2 && y <= y1 || y <= y2)){
-				move(x, y);
+			int x = (int) Math.round(xs + radius * Math.cos(rad));
+			int y = (int) Math.round(ys + radius * Math.sin(rad));
+			//System.out.println("X = " + x + ", Y = " + y);
+			//if(h > 0 &&(x >= x1 || x >= x2 && y >= y1 || y>= y2)||(h < 0 && x <= x1 || x <= x2 && y <= y1 || y <= y2)){
+			if((h>0 && (x >= xs && (y >= y2 || y <= y1)) || (x <= xs && (y >= y1 || y <= y2))) ||
+					(h < 0 && (x>=xs && (y<= y2 || y>= y1)) || (x<=xs && (y <= y1 || y>= y2)))){
+				//System.out.println("Move(" + x + ", " + y + ")");
+				move(x,y);
+				penn.ned();
 			} else {
 				System.out.println("Can't make it!");
 			}
 		}
-		System.out.println(bue);
+		penn.opp();
+		//System.out.println(bue);
+	}
+	//TODO: Lag ferdig metoden!
+	public void tegnBue2(int x1, int y1, int x2, int y2, int h){
+		/* t= tid;
+		 * strekning = (1-t)^2 (x1,y1) + 2t Ph(1-t) + t^2 (x2,y2);
+		 * hastighet = 2(1-t)(x1,y1) + 2 Ph (1-2t)  + 2t(x2,y2);
+		 * 
+		 */
 	}
 	
 	private void home(){
@@ -375,5 +399,4 @@ public class Plotter{
 			utforKommando(kommando);
 		}
 	}
-	
 }
