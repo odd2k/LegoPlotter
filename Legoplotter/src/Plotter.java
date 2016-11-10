@@ -271,15 +271,15 @@ public class Plotter{
 		}
 	}
 	public static boolean sjekk(int x1, int y1){
-		return (x1 < margVenstre || x1 > A4_X - margHoyre && y1 < margTopp || y1 > A4_Y - margBunn);
+		return sjekkX(x1) && sjekkY(y1);
 	}
 	
-	private boolean sjekkX(int x1){
-		return (x1 < margVenstre || x1 > A4_X - margHoyre);
+	private static boolean sjekkX(int x1){
+		return (x1 < 0 || x1 > A4_X - (margVenstre + margHoyre));
 	}
 	
-	private boolean sjekkY(int y1){
-		return(y1 < margTopp || y1 > A4_Y - margBunn);
+	private static boolean sjekkY(int y1){
+		return(y1 < 0 || y1 > A4_Y - (margTopp + margBunn));
 	}
 		
 	private boolean endestoppXTryktNed(){
