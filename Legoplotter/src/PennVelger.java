@@ -1,4 +1,4 @@
-package src;
+
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3TouchSensor;
 

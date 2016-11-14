@@ -333,8 +333,8 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	@Override
 	public void mousePressed(MouseEvent e){
 		if(SwingUtilities.isLeftMouseButton(e)){
-			x = skalerNedX(e.getX());
-			y = skalerNedY(e.getY());
+			x = skalerNedX(e.getX()) - Plotter.margVenstre;
+			y = skalerNedY(e.getY()) - Plotter.margTopp;
 			if(btnPrikk.isSelected())
 				kommando = Kommando.tegnPrikk(x, y, getCurPen());
 			else if(btnLinje.isSelected())
@@ -353,9 +353,9 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e)){
-			int x2 = skalerNedX(e.getX());
+			int x2 = skalerNedX(e.getX()) - Plotter.margVenstre;
 			
-			int y2 = skalerNedY(e.getY());
+			int y2 = skalerNedY(e.getY()) - Plotter.margTopp;
 			
 			// Distanse mellom punkt der musen ble trykt ned, og punktet der musepekeren er nå.
 			int diffX = Math.abs(x2 - x);
@@ -386,10 +386,10 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 
 				int radius = (int) Math.sqrt(Math.pow(diffX, 2)+Math.pow(diffY, 2));
 				
-				radius = Math.min(radius, x - Plotter.margVenstre);
-				radius = Math.min(radius, Plotter.A4_X - Plotter.margHoyre - x);
-				radius = Math.min(radius, y-Plotter.margTopp);
-				radius = Math.min(radius, Plotter.A4_Y-Plotter.margBunn-y);
+				radius = Math.min(radius, x - 0);
+				radius = Math.min(radius, Plotter.A4_X - Plotter.margHoyre - Plotter.margVenstre - x);
+				radius = Math.min(radius, y - 0);
+				radius = Math.min(radius, Plotter.A4_Y-Plotter.margBunn - Plotter.margTopp -y);
 				
 				kommando.setArg(2, radius);
 			}
@@ -398,10 +398,10 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 				int bredde = diffX;
 				int hoyde = diffY;
 				
-				bredde = Math.min(bredde, x - Plotter.margVenstre);
-				bredde = Math.min(bredde, Plotter.A4_X - Plotter.margHoyre - x);
-				hoyde = Math.min(hoyde, y-Plotter.margTopp);
-				hoyde = Math.min(hoyde, Plotter.A4_Y-Plotter.margBunn-y);
+				bredde = Math.min(bredde, x - 0);
+				bredde = Math.min(bredde, Plotter.A4_X - Plotter.margHoyre - Plotter.margVenstre - x);
+				hoyde = Math.min(hoyde, y- 0);
+				hoyde = Math.min(hoyde, Plotter.A4_Y-Plotter.margBunn - Plotter.margTopp-y);
 
 				kommando.setArg(2, bredde);
 				kommando.setArg(3, hoyde);
@@ -545,24 +545,33 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		g2d.setColor(FARGER[kommando.getPenn()-1]);
 		g2d.setStroke(new BasicStroke(2));
 		
+		int x1 = 0;
+		int y1 = 0;
+		int x2 = 0;
+		int y2 = 0;
+		
+		if(args.length >= 2){
+			x1 = skalerOppX(args[0] + Plotter.margVenstre);
+			y1 = skalerOppY(args[1] + Plotter.margTopp);
+		}
+		if(args.length >= 4){
+			x2 = skalerOppX(args[2] + Plotter.margVenstre);
+			y2 = skalerOppY(args[3] + Plotter.margTopp);
+		}
+		
 		switch(type){
 			case PRIKK:{
-				int x = skalerOppX(args[0]);
-				int y = skalerOppY(args[1]);
-				g2d.fillOval(x-5,y-5,10,10);
+				g2d.fillOval(x1-5,y1-5,10,10);
 				break;
 			}
 			
 			case LINJE:{
-				g2d.drawLine(	skalerOppX(args[0]),
-						skalerOppY(args[1]),
-						skalerOppX(args[2]),
-						skalerOppY(args[3]));
+				
+				
+				g2d.drawLine(x1, y1, x2, y2);
 				break;
 			}
 			case FIRKANT:{
-				int x1 = args[0];
-				int y1 = args[1];
 				int bredde = Math.abs(args[2]);
 				int hoyde = Math.abs(args[3]);
 				if(args[2] < 0){
@@ -571,25 +580,22 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 				if(args[3] < 0){
 					y1 -= hoyde;
 				}
-				g2d.drawRect(	skalerOppX(x1),
-								skalerOppY(y1),
-								skalerOppX(bredde),
-								skalerOppY(hoyde));
+				g2d.drawRect(x1, y1, skalerOppX(bredde), skalerOppY(hoyde));
 				break;
 			}
 
 			case OVAL:
-				int x = skalerOppX(args[0]-args[2]);
-				int y = skalerOppY(args[1]-args[3]);
+				x1 = skalerOppX(args[0]-args[2]+Plotter.margVenstre);
+				y1 = skalerOppY(args[1]-args[3]+Plotter.margTopp);
 				int bredde = skalerOppX(args[2]*2);
 				int hoyde = skalerOppY(args[3]*2);
 				
-				g2d.drawOval(x, y, bredde, hoyde);
+				g2d.drawOval(x1, y1, bredde, hoyde);
 				//TODO: tegnOval(args[0], args[1], args[2], args[3]);
 				break;
 			case SIRKEL:{
-				int x1 = skalerOppX(args[0]-args[2]);
-				int y1 = skalerOppY(args[1]-args[2]);
+				x1 = skalerOppX(args[0]-args[2]+Plotter.margVenstre);
+				y1 = skalerOppY(args[1]-args[2]+Plotter.margTopp);
 				int breddeX = skalerOppX(2*args[2]);
 				int breddeY = skalerOppY(2*args[2]);
 				g2d.drawOval(x1, y1, breddeX, breddeY);
