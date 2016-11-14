@@ -24,7 +24,7 @@ public class PlotterKlient{
 
 		System.out.println("Venter pa klient...");
 		
-		plotter.utforKommandoer(KommandoListe.getKommandoListe(1256));
+		plotter.utforKommandoer(KommandoListe.getKommandoListe(Plotter.PORTNR));
 		
 		Button.ENTER.waitForPressAndRelease();
 	}

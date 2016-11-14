@@ -8,6 +8,8 @@ public class Plotter{
 	public static int A4_X = 210; // I millimeter
 	public static int A4_Y = 297;	// I millimeter
 	
+	public static final int PORTNR = 1256;
+	
 	private int x; // kortsida - 0-210mm
 	private int y; // langsida - 0-297mm
 
@@ -180,8 +182,8 @@ public class Plotter{
 		boolean xHjemme = false;
 		boolean yHjemme = false;
 		motorX.backward();// bakover er bakover.
-		motorY.backward();// bakover er bakover.
-		motorY2.backward(); //bakover er bakover :)
+		motorY.forward();// bakover er bakover.
+		motorY2.forward(); //bakover er bakover :)
 		while(!xHjemme || !yHjemme){
 			if(endestoppXTryktNed()){
 				motorX.stop();

@@ -230,7 +230,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		        	printing = true;
 		        	
 		        	try {
-						kommandoer.send(PLOTTER_IP, 1256);
+						kommandoer.send(PLOTTER_IP, Plotter.PORTNR);
 					} 
 		        	catch(SocketTimeoutException e){
 	        		
