@@ -3,16 +3,14 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3TouchSensor;
 
 public class PennVelger {
-	private int antPenner;
-	private int makshastighet = 150;
+	private final int antPenner = 3;
+	private final int makshastighet = 150;
 	private boolean pennNede = false;
 	private boolean skiftePenn = false;
 	private int slack = 45;
 	private int pennNr = 1;
 	
 	private EV3LargeRegulatedMotor motorZ;
-	//private EV3TouchSensor endestoppZ;
-	//private float[] sample = new float[1];
 	
 	/*
 	public PennVelger(EV3LargeRegulatedMotor motorZ, EV3TouchSensor endestoppZ, int antPenner){
@@ -25,13 +23,11 @@ public class PennVelger {
 	*/
 	public PennVelger(EV3LargeRegulatedMotor motorZ){
 		this.motorZ = motorZ;
-		//this.endestoppZ = endestoppZ;
-		this.antPenner = 3;
 	}
 	
 	//TODO: Lag metoden!
 	public void velgPenn(int nr){
-		if(nr<1 || nr> 3){
+		if(nr<1 || nr> antPenner){
 			throw new IllegalArgumentException("Ugyldig penn nr!");
 		}
 		if(!pennNede && !skiftePenn && nr != pennNr){
@@ -66,10 +62,4 @@ public class PennVelger {
 			pennNede = false;
 		}
 	}
-	/*
-	private boolean endestoppZTryktNed(){
-		endestoppZ.fetchSample(sample, 0);
-		return (sample[0]==1);
-	}
-	*/
 }
