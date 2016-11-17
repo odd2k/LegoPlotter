@@ -19,36 +19,37 @@ public class Plotter{
 	private int makshastighet = 20; // millimeter per sekund!
 	
 	//OBS: Lekeverdier for å teste designer.
-	public static final int margTopp = 10; // mm
-	public static final int margHoyre = 20; // mm
-	public static final int margBunn = 30; // mm
-	public static final int margVenstre = 10; // mm
+	public static final int margTopp = 76; // mm
+	public static final int margHoyre = 0; // mm
+	public static final int margBunn = 63; // mm
+	public static final int margVenstre = 30; // mm
 
 	//private boolean pennNede = false; // Her kommer det en pennVelger
 
-	private NXTRegulatedMotor motorX;
 	private NXTRegulatedMotor motorY;
-	private NXTRegulatedMotor motorY2;
+	private NXTRegulatedMotor motorX;
+	private NXTRegulatedMotor motorX2;
 	//private EV3LargeRegulatedMotor motorZ;
-	private NXTTouchSensor endestoppX;
+	private NXTTouchSensor endestoppX, endestoppX2;
 	private NXTTouchSensor endestoppY;
-	//private EV3TouchSensor endestoppZ;
+
 	private float[] sample = new float[1];
 	
 	private PennVelger penn;
 	
-	public Plotter(NXTRegulatedMotor motorX, NXTRegulatedMotor motorY, NXTRegulatedMotor motorY2, EV3LargeRegulatedMotor motorZ, 
-			NXTTouchSensor endestoppX, NXTTouchSensor endestoppY, EV3TouchSensor endestoppZ, double hjulDiameter, double utvekslingX, double utvekslingY){
+	public Plotter(NXTRegulatedMotor motorY, NXTRegulatedMotor motorX, NXTRegulatedMotor motorX2, EV3LargeRegulatedMotor motorZ, 
+			NXTTouchSensor endestoppX, NXTTouchSensor endestoppX2, NXTTouchSensor endestoppY, double hjulDiameter, double utvekslingX, double utvekslingY){
 		if(hjulDiameter <= 0){
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
 		}else{
-		this.motorX = motorX;
 		this.motorY = motorY;
-		this.motorY2 = motorY2;
-		//this.motorZ = motorZ;
+		this.motorX = motorX;
+		this.motorX2 = motorX2;
+		
 		this.endestoppX = endestoppX;
+		this.endestoppX2 = endestoppX2;
 		this.endestoppY = endestoppY;
-		//this.endestoppZ = endestoppZ;
+		
 		this.hjulDiameter = hjulDiameter;
 		
 		this.utvekslingX = utvekslingX;
@@ -179,25 +180,30 @@ public class Plotter{
 	}
 	
 	private void home(){
-		boolean xHjemme = false;
+		boolean x1Hjemme = false;
+		boolean x2Hjemme = false;
 		boolean yHjemme = false;
-		motorX.backward();// bakover er bakover.
-		motorY.forward();// bakover er bakover.
-		motorY2.forward(); //bakover er bakover :)
-		while(!xHjemme || !yHjemme){
+		motorY.backward();// bakover er bakover.
+		motorX.forward();// bakover er bakover.
+		motorX2.forward();
+		while(!x1Hjemme || !x2Hjemme || !yHjemme){
 			if(endestoppXTryktNed()){
 				motorX.stop();
-				x = margVenstre;
-				xHjemme = true;
+				x1Hjemme = true;
 			}
+			if(endestoppX2TryktNed()){
+				motorX2.stop();
+				x2Hjemme = true;
+			}
+			
 			if(endestoppYTryktNed()){
 				motorY.stop();
-				motorY2.stop();
-				y = margTopp;
 				yHjemme = true;
 			}
 		}
 		
+		x = 0;
+		y = 0;
 	}
 	
 	// Returnerer bredde på det området på arket som ligger innenfor margene
@@ -214,18 +220,18 @@ public class Plotter{
 	//TODO: Bytt til private når vi er ferdig å teste denne?
 	public void move(int x1, int y1){// Flytt til kordinat.
 		
-		int lengdeX = Math.abs(x1 - x);
-		int lengdeY = Math.abs(y1 - y);
+		int lengdeX = x1 - x;
+		int lengdeY = y1 - y;
 		
 		// Om bevegelse i X-retning er 3 ganger større enn i y-retning, skal
 		// motor Y bevege seg 3 ganger så langsomt som X.
 		// Om den ene bevegelsen er 0, er ikke dette så nøye.
 		
-		if(lengdeX > lengdeY && lengdeX > 0){
+		if(Math.abs(lengdeX) > Math.abs(lengdeY) && lengdeX != 0){
 			setSpeedX(makshastighet);
 			setSpeedY(makshastighet * (double)lengdeY/lengdeX);
 		}
-		else if(lengdeY > lengdeX && lengdeY > 0){
+		else if(Math.abs(lengdeY) > Math.abs(lengdeX) && lengdeY != 0){
 			setSpeedX(makshastighet * (double)lengdeX/lengdeY);
 			setSpeedY(makshastighet);
 		}
@@ -234,14 +240,12 @@ public class Plotter{
 			setSpeedY(makshastighet);
 		}
 		
-		motorX.resetTachoCount(); motorY.resetTachoCount(); motorY2.resetTachoCount();
-		
 		moveX(lengdeX);
 		moveY(lengdeY);
 		
-		// Ikke hopp ut av metoden før motorene har sluttet å bevege seg, og pennen er over (x1,y1)
-		while(motorX.getTachoCount() < millimeterTilGrader(lengdeX, utvekslingX) && 
-				motorY.getTachoCount() < millimeterTilGrader(lengdeY, utvekslingY)){}
+		motorX.resetTachoCount(); motorX2.resetTachoCount(); motorY.resetTachoCount();
+		
+		while(motorX.isMoving() || motorY.isMoving() || motorX2.isMoving()){}
 		
 		x = x1;
 		y = y1;
@@ -313,6 +317,11 @@ public class Plotter{
 		return (sample[0]==1);
 	}
 	
+	private boolean endestoppX2TryktNed(){
+		endestoppX2.fetchSample(sample, 0);
+		return (sample[0]==1);
+	}
+	
 	private boolean endestoppYTryktNed(){
 		endestoppY.fetchSample(sample, 0);
 		return (sample[0]==1);
@@ -334,23 +343,25 @@ public class Plotter{
 	}
 	
 	//Tar inn millimeter per sekund
-	private void setSpeedX(double mmps){
+	public void setSpeedX(double mmps){
 		motorX.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
+		motorX2.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
 	}
 	
 	//Tar inn millimeter per sekund
-	private void setSpeedY(double mmps){
-		motorY.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
-		motorY2.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
+	public void setSpeedY(double mmps){
+		motorY.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingY));
 	}
 	
-	private void moveX(int mm){
-		motorX.rotate(millimeterTilGrader(mm, utvekslingX), true);
+	public void moveY(int mm){
+		int grader = millimeterTilGrader(mm, utvekslingY);
+		System.out.println("Roterer motor Y med " + grader + "grader");
+		motorY.rotate(grader, true);
 	}
 	
-	private void moveY(int mm){
-		motorY.rotate(millimeterTilGrader(mm, utvekslingY), true);
-		motorY2.rotate(millimeterTilGrader(mm, utvekslingY), true);
+	public void moveX(int mm){
+		motorX.rotate(-millimeterTilGrader(mm, utvekslingX), true);
+		motorX2.rotate(-millimeterTilGrader(mm, utvekslingX), true);
 	}
 	
 	// Brukes for å motta kommandoer over nettverket.
