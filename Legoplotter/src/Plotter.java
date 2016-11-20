@@ -30,10 +30,10 @@ public class Plotter{
 	private NXTRegulatedMotor motorY;
 	private NXTRegulatedMotor motorX;
 	private NXTRegulatedMotor motorX2;
-	//private EV3LargeRegulatedMotor motorZ;
 	private NXTTouchSensor endestoppX, endestoppX2;
 	private NXTTouchSensor endestoppY;
 
+	// Brukes for å mellomlagre innleste verdier fra touch-sensorer
 	private float[] sample = new float[1];
 	
 	private PennVelger penn;
@@ -65,16 +65,12 @@ public class Plotter{
 		home();
 	}
 	
+	// Millimeter per sekund på begge aksene
 	public void settMakshastighet(int makshastighet){
 		this.makshastighet = makshastighet;
 	}
-	/*
-	//TODO: Lag metoden!
-	public void velgPenn(int valgtPenn){// sendes til pennVelger.velgPenn
-		
-	}
 
-	*/
+	//Velg en gitt penn med pennevelgeren
 	public void velgPenn(int nr){
 		penn.velgPenn(nr);
 	}
@@ -131,7 +127,7 @@ public class Plotter{
 
 	
 	
-	//TODO: Test metoden!
+	//TODO: Test metoden! TODO: Kommenter bedre
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){
 		sjekkMarg(x1,y1,x2,y2);
 		//move(x1,y1);
@@ -217,9 +213,8 @@ public class Plotter{
 		return A4_Y - (margTopp + margBunn);
 	}
 	
-	//TODO: Gjør metoden avansert!
-	//TODO: Bytt til private når vi er ferdig å teste denne?
-	public void move(int x1, int y1){// Flytt til kordinat.
+	//Beveger pennen i rett linje til punktet (x1,y1)
+	private void move(int x1, int y1){// Flytt til kordinat.
 		
 		int lengdeX = x1 - x;
 		int lengdeY = y1 - y;
@@ -254,26 +249,7 @@ public class Plotter{
 		System.out.println("x: " + x + "   y: " + y);
 	}
 
-	/*
-	//TODO: Sjekk konstanten
-	private void pennNed(){
-		while(!pennNede){
-			motorZ.forward();
-			if(endestoppZTryktNed()){
-				motorZ.stop();
-				pennNede = true;
-			}
-		}
-		
-	}
-	//TODO: Sjekk konstanten
-	private void pennOpp(){
-		if(pennNede == true){
-			motorZ.rotate(180);
-			pennNede = false;
-		}
-	}
-	*/
+	// Hjelpemetode. Kaster unntak om ett av punktene er utfor margene.
 	private void sjekkMarg(int x1, int y1, int x2, int y2){
 		int bredde = getBredde();
 		int hoyde = getHoyde();
@@ -301,65 +277,71 @@ public class Plotter{
 			throw new IllegalArgumentException("Y-verdi utenfor område! y2: " + y2 + " høyde: " + hoyde);
 		}
 	}
+	
+	// Hjelpemetode. Kaster unntak om punktet er utfor margene.
 	public static boolean sjekk(int x1, int y1){
 		return sjekkX(x1) && sjekkY(y1);
 	}
 	
+	// Hjelpemetode. Kaster unntak om koordinatet er utfor margene.
 	private static boolean sjekkX(int x1){
 		return (x1 < 0 || x1 > A4_X - (margVenstre + margHoyre));
 	}
 	
+	// Hjelpemetode. Kaster unntak om koordinatet er utfor margene.
 	private static boolean sjekkY(int y1){
 		return(y1 < 0 || y1 > A4_Y - (margTopp + margBunn));
 	}
-		
+	
+	// True hvis endestoppbryter 1 for akse X er trykt ned.
 	private boolean endestoppXTryktNed(){
 		endestoppX.fetchSample(sample, 0);
 		return (sample[0]==1);
 	}
 	
+	// True hvis endestoppbryter 2 for akse X er trykt ned.
 	private boolean endestoppX2TryktNed(){
 		endestoppX2.fetchSample(sample, 0);
 		return (sample[0]==1);
 	}
 	
+	// True hvis endestoppbryter for akse Y er trykt ned.
 	private boolean endestoppYTryktNed(){
 		endestoppY.fetchSample(sample, 0);
 		return (sample[0]==1);
 	}
-	/*
-	private boolean endestoppZTryktNed(){
-		endestoppZ.fetchSample(sample, 0);
-		return (sample[0]==1);
-	}
-	*/
+
+	//Konverterer fra omdreining på motor i grader til forflytning på arket i millimeter.
 	private int graderTilMillimeter(int grader, double utveksling){
 		int millimeter = (int)Math.round((Math.PI * hjulDiameter * grader * utveksling) / (360));
 		return millimeter;
 	}
 	
+	//Konverterer fra forflytning på arket i millimeter til omdreining på motor i grader.
 	private int millimeterTilGrader(int millimeter, double utveksling){
 		int grader = (int)Math.round((360 * millimeter) / (Math.PI * hjulDiameter * utveksling));
 		return grader;
 	}
 	
-	//Tar inn millimeter per sekund
+	//Setter hastighet på x-aksen, i millimeter per sekund
 	public void setSpeedX(double mmps){
 		motorX.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
 		motorX2.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
 	}
 	
-	//Tar inn millimeter per sekund
+	//Setter hastighet på y-aksen, i millimeter per sekund
 	public void setSpeedY(double mmps){
 		motorY.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingY));
 	}
 	
+	//Beveger akse Y gitt antall millimeter. OBS: metoden returnerer umiddelbart uten å vente på fullført bevegelse.
 	public void moveY(int mm){
 		int grader = millimeterTilGrader(mm, utvekslingY);
 		System.out.println("Roterer motor Y med " + grader + "grader");
 		motorY.rotate(grader, true);
 	}
 	
+	//Beveger akse X gitt antall millimeter. OBS: metoden returnerer umiddelbart uten å vente på fullført bevegelse.
 	public void moveX(int mm){
 		motorX.rotate(-millimeterTilGrader(mm, utvekslingX), true);
 		motorX2.rotate(-millimeterTilGrader(mm, utvekslingX), true);

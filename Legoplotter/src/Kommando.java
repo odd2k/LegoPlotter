@@ -20,9 +20,9 @@ public class Kommando implements Serializable{
 		private KommandoType(int value){this.value = value;}
 	}
 	
-	private KommandoType type;
-	private int[] args;
-	private int penn = 0;
+	private KommandoType type; // Spesifiserer hvilken type kommando dette er
+	private int[] args; // Argumentene til kommandoer. Noen kommandoer har flere argumenter enn andre.
+	private int penn = 0; // Hvilken penn skal være aktiv mens kommandoen utføres?
 	
 	public Kommando(KommandoType type, int[] args, int penn){
 		this.type = type;
@@ -35,6 +35,8 @@ public class Kommando implements Serializable{
 		
 		this.penn = penn;
 	}
+	
+	// Funksjonene under genererer kommando-objekter tilhørende ulike figurer.
 	
 	public static Kommando tegnPrikk(int x1, int y1, int penn){
 		int[] args = new int[2];
@@ -109,22 +111,27 @@ public class Kommando implements Serializable{
 		return new Kommando(KommandoType.PENN_OPP, null, 0);
 	}
 
+	// Hent aktiv kommandotype
 	public KommandoType getType(){
 		return type;
 	}
 	
+	//Hent aktiv penn
 	public int getPenn(){
 		return penn;
 	}
 	
+	//Hent argumenter
 	public int[] getArgs(){
 		return args;
 	}
 	
+	// Hent gitt argument
 	public int getArg(int index){
 		return args[index];
 	}
 	
+	// Sett gitt argument
 	public void setArg(int index, int val){
 		args[index] = val;
 	}

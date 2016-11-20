@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+// Inneholder kommandoer som kan brukes til å tegne figurer på skjerm eller sendes til plotter.
 // Bruk KommandoListe.add(Kommando) for å legge til kommandoer i lista
 public class KommandoListe extends ArrayList<Kommando>{
 	/**
@@ -51,6 +52,7 @@ public class KommandoListe extends ArrayList<Kommando>{
 		forbindelse.close();
 	}
 	
+	// Lagrer hele kommandolista til fil.
 	public void lagre(File fil) throws FileNotFoundException, IOException{
 		String filnavn = fil.toString();
 		
@@ -64,6 +66,7 @@ public class KommandoListe extends ArrayList<Kommando>{
 		skriveren.close();
 	}
 	
+	//Åpner kommandoliste fra fil
 	public void apne(File fil) throws FileNotFoundException, IOException, ClassNotFoundException{
 		ObjectInputStream leseren = new ObjectInputStream(new FileInputStream(fil));
 		

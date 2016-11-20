@@ -19,7 +19,10 @@ public class PlotterKlient{
 		NXTTouchSensor endestoppY = new NXTTouchSensor(SensorPort.S1);
 		double hjulDiameter = 39.46;// I millimeter
 		
-		plotter = new Plotter(motorY, motorX, motorX2, motorZ, endestoppX, endestoppX2, endestoppY, hjulDiameter, 1.0f/2.0f, 24.0f/40.0f);
+		double utvekslingX = 1.0f/2.0f;
+		double utvekslingY = 24.0f/40.0f;
+		
+		plotter = new Plotter(motorY, motorX, motorX2, motorZ, endestoppX, endestoppX2, endestoppY, hjulDiameter, utvekslingX, utvekslingY);
 
 		while(true){
 			System.out.println("Venter pa klient...");

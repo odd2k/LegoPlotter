@@ -51,10 +51,16 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	// Valg av farger til tegning. Grensesnittet utvides automatisk når tabellen utvides.
 	private final Color[] FARGER = new Color[]{Color.BLACK, Color.RED, Color.GREEN};
 	
+	//Kommandoer som tegnes på skjermen, og evt. sendes til plotter
 	public KommandoListe kommandoer = new KommandoListe();
+	
+	//Kommandoer som brukeren har angret. Kan evt. gjentas
 	public KommandoListe angre_kommandoer = new KommandoListe();
 	
+	//Kommandoen som er i ferd med å bli tegnet.
 	Kommando kommando = null;
+	
+	//Holder programmet på å sende data til printeren?
 	public boolean printing = false;
 	
 	//X og Y-koordinater der musen ble trykt ned på tegneområdet
@@ -327,6 +333,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		return 1;
 	}
 	
+	//Musen ble trykt inn. Begynn å tegne ny figur.
 	@Override
 	public void mousePressed(MouseEvent e){
 		if(SwingUtilities.isLeftMouseButton(e)){
@@ -347,6 +354,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		}
 	}
 
+	// Musen dras over skjermen. Oppdater figuren som tegnes
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e)){
@@ -408,6 +416,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		repaint();
 	}
 	
+	//Musen ble sluppet. Flytt aktiv figur inn i kommandoliste
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e)){			
@@ -469,7 +478,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		return y;
 	}
 	
-
+	// Flytt kommandoer fra angre-lista og tilbake til kommandolista
 	public void angre(){
 		if(!kommandoer.isEmpty()){
 			angre_kommandoer.add(kommandoer.get(kommandoer.size()-1));
@@ -483,6 +492,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		}
 	}
 	
+	// "Angre" angre-funksjonen.
 	public void gjenta(){
 		if(!angre_kommandoer.isEmpty()){
 			kommandoer.add(angre_kommandoer.get(angre_kommandoer.size()-1));
@@ -496,6 +506,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		}
 	}
 
+	//Oppdater skjermbilde
 	public void paintComponent(Graphics g){
 		
 		Graphics2D g2d = (Graphics2D)g;
@@ -534,6 +545,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 				this.getHeight() - skalerOppY(Plotter.margTopp + Plotter.margBunn));
 	}
 	
+	// Tegn gitt kommando på skjermen.
 	public void utforKommando(Kommando kommando, Graphics2D g2d){
 		
 		Kommando.KommandoType type = kommando.getType();
@@ -613,6 +625,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 
 }
 
+// Brukes for å angre handlinger.
 class AngreAction extends AbstractAction{
 	
 	private static final long serialVersionUID = 3499842459805898252L;
@@ -629,6 +642,7 @@ class AngreAction extends AbstractAction{
 	
 }
 
+// Brukes for å gjenta handlinger.
 class GjentaAction extends AbstractAction{
 
 	private static final long serialVersionUID = -41447889653539512L;
