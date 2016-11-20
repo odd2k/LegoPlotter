@@ -8,6 +8,7 @@ public class Plotter{
 	public static int A4_X = 210; // I millimeter
 	public static int A4_Y = 297;	// I millimeter
 	
+	public static final String PLOTTER_IP = "10.101.101.1";
 	public static final int PORTNR = 1256;
 	
 	private int x; // kortsida - 0-210mm

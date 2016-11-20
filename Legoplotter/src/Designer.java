@@ -47,11 +47,9 @@ import java.util.Enumeration;
 public class Designer extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
 
 	private static final long serialVersionUID = -1383411119408529184L;
-
-	private final String PLOTTER_IP = "10.101.101.1";
 	
 	// Valg av farger til tegning. Grensesnittet utvides automatisk når tabellen utvides.
-	private final Color[] FARGER = new Color[]{Color.BLACK, Color.RED, Color.GREEN, Color.BLUE, Color.ORANGE};
+	private final Color[] FARGER = new Color[]{Color.BLACK, Color.RED, Color.GREEN};
 	
 	public KommandoListe kommandoer = new KommandoListe();
 	public KommandoListe angre_kommandoer = new KommandoListe();
@@ -173,9 +171,8 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		grpPens = new ButtonGroup();
 		
 		for(int i = 0; i < FARGER.length; i++){
-			JToggleButton btn = new JToggleButton();
-			btn.setOpaque(true);
-			btn.setBackground(FARGER[i]);
+			JToggleButton btn = new JToggleButton(""+(i+1));
+			btn.setForeground(FARGER[i]);
 			btn.setActionCommand(""+ (i+1) );
 			btn.setMaximumSize(new Dimension(31,31));
 			toolBar.add(btn);
@@ -230,7 +227,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		        	printing = true;
 		        	
 		        	try {
-						kommandoer.send(PLOTTER_IP, Plotter.PORTNR);
+						kommandoer.send(Plotter.PLOTTER_IP, Plotter.PORTNR);
 					} 
 		        	catch(SocketTimeoutException e){
 	        		
@@ -238,7 +235,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	        		boolean reachable = false;
 	        		
 	        		try {
-						ip = InetAddress.getByName(PLOTTER_IP);
+						ip = InetAddress.getByName(Plotter.PLOTTER_IP);
 						reachable = ip.isReachable(500);
 						
 					} catch (Exception e1) {}
