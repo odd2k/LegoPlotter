@@ -105,15 +105,15 @@ public class Plotter{
 	
 	//TODO: Forbedre metoden
 	public void tegnOval(int x1, int y1, int bredde, int hoyde){
-		sjekkMarg(x1-bredde,y1-hoyde,x1+bredde,y1+hoyde);
+		sjekkMarg(x1,y1,x1 + bredde,y1 + hoyde);
 		int radiusX = bredde/2;
 		int radiusY = hoyde/2;
 		for(int deg = 0; deg<=360; deg++){
 			if(deg == 0)
 				penn.ned();
 			double rad = Math.toRadians(deg);
-			int x = (int) Math.round(x1 + radiusX * Math.cos(rad));
-			int y = (int) Math.round(y1 + radiusY * Math.sin(rad));
+			int x = (int) Math.round(x1 + (bredde/2) + radiusX * Math.cos(rad));
+			int y = (int) Math.round(y1 + (hoyde/2) + radiusY * Math.sin(rad));
 			move(x, y);
 		}
 		penn.opp();
@@ -147,7 +147,7 @@ public class Plotter{
 		//sjekkMarg(x1,y1,x2,y2);
 		//move(x1,y1);
 		double radius = ((4*Math.pow(h, 2))+(Math.pow((x2-x1),2)+Math.pow((y2-y1),2)))/(8*h);
-		double bue = 2*(Math.sin(1-(h/radius)));
+		//double bue = 2*(Math.sin(1-(h/radius)));
 		/* vektor en = (x2-x1,y2-y1)
 		 * vektor to = (y2-y1,-(x2-x1))
 		 * midtpunkt t = |vektor en|/2 + punkt(x1,y1);
@@ -204,17 +204,65 @@ public class Plotter{
 		penn.ned();
 		for(int i = 1;i<kordinatX.size();i++){
 			move(kordinatX.get(i),kordinatY.get(i));
+			x = kordinatX.get(i);
+			y = kordinatY.get(i);
 		}
 		penn.opp();
 		//System.out.println(bue);
 	}
-	//TODO: Lag ferdig metoden!
-	public void tegnBue2(int x1, int y1, int x2, int y2, int h){
-		/* t= tid;
-		 * strekning = (1-t)^2 (x1,y1) + 2t Ph(1-t) + t^2 (x2,y2);
-		 * hastighet = 2(1-t)(x1,y1) + 2 Ph (1-2t)  + 2t(x2,y2);
-		 * 
+	//TODO: Test metoden!
+	public void tegnBue2(int x1, int y1, int x2, int y2, int x3, int y3) throws InterruptedException{
+		/* t= tid = delta t / total t;
+		 * hastighet = 2*P(t,y-x,z-y);
 		 */
+		double t = 0;
+		move(x1,y1);
+		x = x1;
+		y = y1;
+		penn.ned();
+		Thread.sleep(200);
+		boolean xForward = true;
+		boolean yForward = true;
+		while(t<1){
+			int x = (int)Math.round(B(t,x1,x2,x3));
+			int y = (int)Math.round(B(t,y1,y2,y3));
+			if(y<this.y && yForward){
+				motorY.backward();
+				yForward = false;
+			}else if(y>this.y && !yForward){
+				motorY.forward();
+				yForward = true;
+			}
+			if(x<this.x && xForward){
+				motorX.backward();
+				motorX2.backward();
+				xForward = false;
+			}else if(x>this.x && !xForward){
+				motorX.forward();
+				motorX2.forward();
+				xForward = true;
+			}
+			this.y = y;
+			this.x = x;
+			
+			motorX.setSpeed(Math.abs((int)Math.round(2*P(t,x2-x1,x3-x2))));
+			motorX2.setSpeed(Math.abs((int)Math.round(2*P(t,x2-x1,x3-x2))));
+			motorY.setSpeed(Math.abs((int)Math.round(2*P(t,y2-y1,y3-y2))));
+			
+			Thread.sleep(500);
+			t+=0.05;
+		}
+		motorX.stop();
+		motorX2.stop();
+		motorY.stop();
+	}
+	
+	private double P(double t, double x, double y){
+		return (1-t) * x + t * y;
+	}
+	
+	private double B(double t, double x, double y, double z){
+		return (1-t) * P(t,x,y) + t * P(t,y,z);
 	}
 	
 	private void home(){
