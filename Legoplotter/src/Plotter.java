@@ -109,22 +109,35 @@ public class Plotter{
 		int radiusX = bredde/2;
 		int radiusY = hoyde/2;
 		for(int deg = 0; deg<=360; deg++){
+			if(deg == 0)
+				penn.ned();
 			double rad = Math.toRadians(deg);
 			int x = (int) Math.round(x1 + radiusX * Math.cos(rad));
 			int y = (int) Math.round(y1 + radiusY * Math.sin(rad));
 			move(x, y);
 		}
+		penn.opp();
 	}
 	
 	//TODO: Finn en annen løsning
 	public void tegnSirkel(int x1, int y1, int radius){
 		sjekkMarg(x1-radius,y1-radius,x1+radius,y1+radius);
-		for(int deg = 0; deg<=360; deg++){
+		final float SEGMENT_LENGDE = 10; // millimeter
+		float omkrets = 2 * radius * (float)Math.PI;
+		float theta = omkrets / SEGMENT_LENGDE;
+		
+		
+		for(float deg = 0; deg<=360; deg+=theta){
+			
+			if(deg == 0)
+				penn.ned();
+			
 			double rad = Math.toRadians(deg);
 			int x = (int) Math.round(x1 + radius * Math.cos(rad));
 			int y = (int) Math.round(y1 + radius * Math.sin(rad));
 			move(x, y);
 		}
+		penn.opp();
 	}
 
 	
