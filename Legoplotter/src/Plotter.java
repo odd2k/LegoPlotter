@@ -122,14 +122,14 @@ public class Plotter{
 	//TODO: Finn en annen løsning
 	public void tegnSirkel(int x1, int y1, int radius){
 		sjekkMarg(x1-radius,y1-radius,x1+radius,y1+radius);
-		final float SEGMENT_LENGDE = 10; // millimeter
+		final float SEGMENT_LENGDE = 10; // millimeter... Segmentene blir noe kortere enn dette, men det fungerer.
 		float omkrets = 2 * radius * (float)Math.PI;
-		float theta = omkrets / SEGMENT_LENGDE;
+		float theta = 360 * (SEGMENT_LENGDE / omkrets);
 		
-		
+		System.out.println("omkrets: " + omkrets + "  theta: " + theta + "  n: " + (360/theta));
 		for(float deg = 0; deg<=360; deg+=theta){
 			
-			if(deg == 0)
+			if(deg == theta)
 				penn.ned();
 			
 			double rad = Math.toRadians(deg);
@@ -287,7 +287,6 @@ public class Plotter{
 		x = x1;
 		y = y1;
 		
-		System.out.println("x: " + x + "   y: " + y);
 	}
 
 	// Hjelpemetode. Kaster unntak om ett av punktene er utfor margene.
@@ -378,7 +377,6 @@ public class Plotter{
 	//Beveger akse Y gitt antall millimeter. OBS: metoden returnerer umiddelbart uten å vente på fullført bevegelse.
 	public void moveY(int mm){
 		int grader = millimeterTilGrader(mm, utvekslingY);
-		System.out.println("Roterer motor Y med " + grader + "grader");
 		motorY.rotate(grader, true);
 	}
 	
