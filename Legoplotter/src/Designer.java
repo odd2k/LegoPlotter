@@ -21,9 +21,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -34,6 +36,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -66,6 +69,8 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	//X og Y-koordinater der musen ble trykt ned på tegneområdet
 	int x, y;
 	
+	public boolean shiftPressed = false;
+	
 	JButton btnNy, btnApne, btnLagre, btnPrint, btnAngre, btnGjenta;
 	JToggleButton btnPrikk, btnLinje, btnFirkant, btnSirkel, btnOval, btnGrid;
 	ButtonGroup grpPens;
@@ -84,6 +89,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		});
 	}
 
+	@SuppressWarnings("serial")
 	public Designer() {
 		
 		JFrame frame = new JFrame();
@@ -194,11 +200,31 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control Z"),"angre");
-		getActionMap().put("angre", new AngreAction(this));
+		InputMap im = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		ActionMap am = getActionMap();
 		
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control Y"),"gjenta");
-		getActionMap().put("gjenta", new GjentaAction(this));
+		im.put(KeyStroke.getKeyStroke("control Z"),"angre");
+		am.put("angre", new AngreAction(this));
+		
+		im.put(KeyStroke.getKeyStroke("control Y"),"gjenta");
+		am.put("gjenta", new GjentaAction(this));
+		
+		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL,0),"shiftPressed");
+		am.put("shiftPressed", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				shiftPressed = true;
+				System.out.println("Shift pressed");
+			}});
+		
+		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, 0, true),"shiftReleased");
+		am.put("shiftReleased", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				shiftPressed = false;
+				System.out.println("Shift released");
+			}});
+		
 
 		frame.add(this, BorderLayout.CENTER);
 		
@@ -379,11 +405,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 				kommando.setArg(0, Math.min(x, x2));
 				kommando.setArg(1, Math.min(y, y2));
 				
-				if(y2 < y)
-					kommando.setArg(1, y2);
-				else
-					kommando.setArg(1, y);
-				
+
 				kommando.setArg(2, diffX);
 				kommando.setArg(3, diffY);
 			}
@@ -400,16 +422,37 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 			}
 			else if(btnOval.isSelected()){
 			
-				int bredde = diffX;
-				int hoyde = diffY;
+				int diff = Math.min(diffX, diffY);
 				
-				bredde = Math.min(bredde, x - 0);
-				bredde = Math.min(bredde, Plotter.A4_X - Plotter.margHoyre - Plotter.margVenstre - x);
-				hoyde = Math.min(hoyde, y- 0);
-				hoyde = Math.min(hoyde, Plotter.A4_Y-Plotter.margBunn - Plotter.margTopp-y);
+				if(shiftPressed){
+					if(x2 > x){
+						kommando.setArg(0, x);
+						kommando.setArg(2, x+diff);
+					}
+					else{
+						kommando.setArg(2, x);
+						kommando.setArg(0, x-diff);
+					}
+					
+					if(y2 > y){
+						kommando.setArg(1, y);
+						kommando.setArg(3, y+diff);
+					}
+					else{
+						kommando.setArg(3, y);
+						kommando.setArg(1, y-diff);
+					}	
+				}
+				else{
+					kommando.setArg(0, Math.min(x,x2));
+					kommando.setArg(1, Math.min(y,y2));
+					kommando.setArg(2, Math.max(x,x2));
+					kommando.setArg(3, Math.max(y,y2));
+				}
 
-				kommando.setArg(2, bredde);
-				kommando.setArg(3, hoyde);
+				
+
+				
 			}
 			
 		}
@@ -594,21 +637,22 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 			}
 
 			case OVAL:
-				x1 = skalerOppX(args[0]-args[2]+Plotter.margVenstre);
-				y1 = skalerOppY(args[1]-args[3]+Plotter.margTopp);
-				int bredde = skalerOppX(args[2]*2);
-				int hoyde = skalerOppY(args[3]*2);
+				
+				
+				x1 = skalerOppX(args[0]+Plotter.margVenstre);
+				y1 = skalerOppY(args[1]+Plotter.margTopp);
+				int bredde = skalerOppX(args[2]-args[0]);
+				int hoyde = skalerOppY(args[3]-args[1]);
 				
 				g2d.drawOval(x1, y1, bredde, hoyde);
-				//TODO: tegnOval(args[0], args[1], args[2], args[3]);
 				break;
 			case SIRKEL:{
 				x1 = skalerOppX(args[0]-args[2]+Plotter.margVenstre);
 				y1 = skalerOppY(args[1]-args[2]+Plotter.margTopp);
 				int breddeX = skalerOppX(2*args[2]);
 				int breddeY = skalerOppY(2*args[2]);
+				
 				g2d.drawOval(x1, y1, breddeX, breddeY);
-				//TODO: tegnSirkel(args[0], args[1], args[2]);
 				break;
 			}
 
