@@ -144,7 +144,7 @@ public class Plotter{
 	
 	//TODO: Test metoden! TODO: Kommenter bedre
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){
-		sjekkMarg(x1,y1,x2,y2);
+		//sjekkMarg(x1,y1,x2,y2);
 		//move(x1,y1);
 		double radius = ((4*Math.pow(h, 2))+(Math.pow((x2-x1),2)+Math.pow((y2-y1),2)))/(8*h);
 		double bue = 2*(Math.sin(1-(h/radius)));
@@ -166,6 +166,10 @@ public class Plotter{
 		//System.out.println("SenterX: " + xs + ", SenterY: " + ys +";");
 		ArrayList<Integer> kordinatX = new ArrayList<Integer>();
 		ArrayList<Integer> kordinatY = new ArrayList<Integer>();
+		int xMax = 0;
+		int xMin = 0;
+		int yMax = 0;
+		int yMin = 0;
 		for(int deg = 0; deg<=360; deg++){
 			double rad = Math.toRadians(deg);
 			int index = 0;
@@ -178,6 +182,12 @@ public class Plotter{
 				kordinatX.add(index,x);
 				kordinatY.add(index,y);
 				index++;
+				
+				//Sjekk maks og min x og y
+				if(x > xMax){xMax = x;}
+				if(x < xMin){xMin = x;}
+				if(y > yMax){yMax = x;}
+				if(y < yMin){yMin = x;}
 				/*
 				System.out.println("Move(" + x + ", " + y + ")");
 				move(x,y);
@@ -188,6 +198,7 @@ public class Plotter{
 				//System.out.println("Can't make it!");
 			}
 		}
+		sjekkMarg(xMin,yMin,xMax,yMax);
 		move(kordinatX.get(0),kordinatY.get(0));
 		penn.ned();
 		for(int i = 1;i<kordinatX.size();i++){
