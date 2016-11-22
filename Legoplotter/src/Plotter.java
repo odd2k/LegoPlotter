@@ -198,6 +198,7 @@ public class Plotter{
 				//System.out.println("Can't make it!");
 			}
 		}
+		//test
 		sjekkMarg(xMin,yMin,xMax,yMax);
 		move(kordinatX.get(0),kordinatY.get(0));
 		penn.ned();
