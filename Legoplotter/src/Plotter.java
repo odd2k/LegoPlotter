@@ -1,4 +1,6 @@
 
+import java.util.ArrayList;
+
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.sensor.NXTTouchSensor;
@@ -143,26 +145,40 @@ public class Plotter{
 		double k = (h-radius)/(Math.sqrt(Math.pow((x2-x1),2)+(Math.pow((y2-y1),2))));
 		int xs;// X senter
 		int ys;// Y senter
-		move(59,61);
-		penn.ned();
+		//move(59,61);
+		//penn.ned();
 		xs = (int)Math.round((k*(-y2+y1)) + tx);
 		ys = (int)Math.round((k*(x2-x1)) + ty);
 		//System.out.println("Radius: " + radius + ";");
 		//System.out.println("SenterX: " + xs + ", SenterY: " + ys +";");
+		ArrayList<Integer> kordinatX = new ArrayList<Integer>();
+		ArrayList<Integer> kordinatY = new ArrayList<Integer>();
 		for(int deg = 0; deg<=360; deg++){
 			double rad = Math.toRadians(deg);
+			int index = 0;
 			int x = (int) Math.round(xs + radius * Math.cos(rad));
 			int y = (int) Math.round(ys + radius * Math.sin(rad));
 			//System.out.println("X = " + x + ", Y = " + y);
 			//if(h > 0 &&(x >= x1 || x >= x2 && y >= y1 || y>= y2)||(h < 0 && x <= x1 || x <= x2 && y <= y1 || y <= y2)){
 			if((h>0 && (x >= xs && (y >= y2 || y <= y1)) || (x <= xs && (y >= y1 || y <= y2))) ||
 					(h < 0 && (x>=xs && (y<= y2 || y>= y1)) || (x<=xs && (y <= y1 || y>= y2)))){
-				//System.out.println("Move(" + x + ", " + y + ")");
+				kordinatX.add(index,x);
+				kordinatY.add(index,y);
+				index++;
+				/*
+				System.out.println("Move(" + x + ", " + y + ")");
 				move(x,y);
 				penn.ned();
+				*/
 			} else {
-				System.out.println("Can't make it!");
+				index = 0;
+				//System.out.println("Can't make it!");
 			}
+		}
+		move(kordinatX.get(0),kordinatY.get(0));
+		penn.ned();
+		for(int i = 1;i<kordinatX.size();i++){
+			move(kordinatX.get(i),kordinatY.get(i));
 		}
 		penn.opp();
 		//System.out.println(bue);
