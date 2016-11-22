@@ -9,6 +9,7 @@ public class PennVelger {
 	private boolean skiftePenn = false; // Er girsystemet i skift penn-modus?
 	private int slack = 45; //Ekstra rotasjon i girsystemet pga. slakk
 	private int pennNr = 1; // Valgt penn
+	private int rotasjon = (int)(180 / (12f/20f) / (16f/20f)); // antall grader motor må rotere for å bevege penn opp/ned
 	
 	private EV3LargeRegulatedMotor motorZ;
 	
@@ -22,17 +23,21 @@ public class PennVelger {
 		if(nr<1 || nr> antPenner){
 			throw new IllegalArgumentException("Ugyldig penn nr!");
 		}
-		if(!pennNede && !skiftePenn && nr != pennNr){
+		
+		if(pennNede || nr == pennNr)
+			return;
+		
+		if(!skiftePenn){
 			motorZ.rotate(slack);
 			skiftePenn = true;
-		}else if(!pennNede && skiftePenn && nr != pennNr){
-			if(nr == pennNr+1 || nr == pennNr -2){
-				motorZ.rotate(200);
-			}else if(nr == pennNr +2 || nr == pennNr -1){
-				motorZ.rotate(400);
-			}
-			pennNr = nr;
 		}
+		
+		if(nr == pennNr+1 || nr == pennNr -2){
+			motorZ.rotate(200);
+		}else if(nr == pennNr +2 || nr == pennNr -1){
+			motorZ.rotate(400);
+		}
+		
 	}
 	
 	//Flytter pennen ned
@@ -43,7 +48,7 @@ public class PennVelger {
 			skiftePenn = false;
 		}
 		if(!pennNede){
-			motorZ.rotate(-375);
+			motorZ.rotate(-rotasjon);
 			pennNede = true;
 		}
 		
@@ -53,7 +58,7 @@ public class PennVelger {
 	//TODO: Test metoden
 	public void opp(){
 		if(pennNede){
-			motorZ.rotate(-375);
+			motorZ.rotate(-rotasjon);
 			pennNede = false;
 		}
 	}
