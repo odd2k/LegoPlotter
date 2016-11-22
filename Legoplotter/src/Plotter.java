@@ -126,11 +126,10 @@ public class Plotter{
 		float omkrets = 2 * radius * (float)Math.PI;
 		float theta = 360 * (SEGMENT_LENGDE / omkrets);
 		
-		System.out.println("omkrets: " + omkrets + "  theta: " + theta + "  n: " + (360/theta));
+		move(x1 + radius,y1);
+		penn.ned();
+		
 		for(float deg = 0; deg<=360; deg+=theta){
-			
-			if(deg == theta)
-				penn.ned();
 			
 			double rad = Math.toRadians(deg);
 			int x = (int) Math.round(x1 + radius * Math.cos(rad));
