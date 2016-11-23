@@ -170,10 +170,10 @@ public class Plotter{
 
 	
 	
+
 	//TODO: Test metoden! TODO: Kommenter bedre
-	public void tegnBue(int x1, int y1, int x2, int y2, int h){
-		//sjekkMarg(x1,y1,x2,y2);
-		//move(x1,y1);
+	public void tegnBue(int x1, int y1, int x2, int y2, int h){//Tegner en del av en sirkel
+		//Radius til sirkelen
 		double radius = ((4*Math.pow(h, 2))+(Math.pow((x2-x1),2)+Math.pow((y2-y1),2)))/(8*h);
 		//double bue = 2*(Math.sin(1-(h/radius)));
 		/* vektor en = (x2-x1,y2-y1)
@@ -181,23 +181,35 @@ public class Plotter{
 		 * midtpunkt t = |vektor en|/2 + punkt(x1,y1);
 		 * senter i sirkel(s) = t + k * vektor to;
 		 */
+		
+		//Midtpunktet mellom punktene
 		int tx = Math.round((x1+x2)/2);// h= 20 -> h^2 = 22
 		int ty = Math.round((y1+y2)/2);
+		
+		//Konstanten mellom radius og vektor to.
 		double k = (h-radius)/(Math.sqrt(Math.pow((x2-x1),2)+(Math.pow((y2-y1),2))));
-		int xs;// X senter
-		int ys;// Y senter
-		//move(59,61);
-		//penn.ned();
-		xs = (int)Math.round((k*(-y2+y1)) + tx);
-		ys = (int)Math.round((k*(x2-x1)) + ty);
+		
+		//Senter punkt
+		int xs = (int)Math.round((k*(-y2+y1)) + tx);
+		int ys = (int)Math.round((k*(x2-x1)) + ty);
+		
 		//System.out.println("Radius: " + radius + ";");
 		//System.out.println("SenterX: " + xs + ", SenterY: " + ys +";");
 		ArrayList<Integer> kordinatX = new ArrayList<Integer>();
 		ArrayList<Integer> kordinatY = new ArrayList<Integer>();
+		
+		/* En annen måte metoden kunne basert seg på.
+		double tLengde = Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2))/2;
+		int gradBue = (int) Math.round(Math.asin(tLengde/radius)*2);
+		int gradStart = (int) Math.round(Math.asin((y2-ys)/radius));
+		*/
+		
+		//Grenseverdier til buen
 		int xMax = 0;
 		int xMin = 0;
 		int yMax = 0;
 		int yMin = 0;
+		
 		for(int deg = 0; deg<=360; deg++){
 			double rad = Math.toRadians(deg);
 			int index = 0;
@@ -205,30 +217,28 @@ public class Plotter{
 			int y = (int) Math.round(ys + radius * Math.sin(rad));
 			//System.out.println("X = " + x + ", Y = " + y);
 			//if(h > 0 &&(x >= x1 || x >= x2 && y >= y1 || y>= y2)||(h < 0 && x <= x1 || x <= x2 && y <= y1 || y <= y2)){
-			if((h>0 && (x >= xs && (y >= y2 || y <= y1)) || (x <= xs && (y >= y1 || y <= y2))) ||
-					(h < 0 && (x>=xs && (y<= y2 || y>= y1)) || (x<=xs && (y <= y1 || y>= y2)))){
+			//if((h>0 && (x >= xs && (y >= y2 || y <= y1)) || (x <= xs && (y >= y1 || y <= y2))) ||(h < 0 && (x>=xs && (y<= y2 || y>= y1)) || (x<=xs && (y <= y1 || y>= y2)))){
+			if(sjekkBue(h,x,y,xs,ys,x1,y1,x2,y2)){
+				//Plasserer gokjente kordinater inn i lister
 				kordinatX.add(index,x);
 				kordinatY.add(index,y);
 				index++;
-				
-				//Sjekk maks og min x og y
+				//Setter grense verdier
 				if(x > xMax){xMax = x;}
 				if(x < xMin){xMin = x;}
-				if(y > yMax){yMax = x;}
-				if(y < yMin){yMin = x;}
-				/*
-				System.out.println("Move(" + x + ", " + y + ")");
-				move(x,y);
-				penn.ned();
-				*/
+				if(y > yMax){yMax = y;}
+				if(y < yMin){yMin = y;}
+				
 			} else {
 				index = 0;
-				//System.out.println("Can't make it!");
 			}
 		}
-		//test
+		
 		sjekkMarg(xMin,yMin,xMax,yMax);
+		
+		//Flytt til startpunkt
 		move(kordinatX.get(0),kordinatY.get(0));
+		//Tegn buen
 		penn.ned();
 		for(int i = 1;i<kordinatX.size();i++){
 			move(kordinatX.get(i),kordinatY.get(i));
@@ -238,8 +248,10 @@ public class Plotter{
 		penn.opp();
 		//System.out.println(bue);
 	}
+	
+	
 	//TODO: Test metoden!
-	public void tegnBue2(int x1, int y1, int x2, int y2, int x3, int y3) throws InterruptedException{
+	public void tegnBue2Motor(int x1, int y1, int x2, int y2, int x3, int y3) throws InterruptedException{//Tegner en bue basert på tre inviduelle punkter
 		/* t= tid = delta t / total t;
 		 * hastighet = 2*P(t,y-x,z-y);
 		 */
@@ -285,11 +297,45 @@ public class Plotter{
 		motorY.stop();
 	}
 	
-	private double P(double t, double x, double y){
+	public void tegnBue2(int x1, int y1, int x2, int y2, int x3, int y3) throws InterruptedException{//Tegner en bue basert på tre inviduelle punkter
+		/* t= tid = delta t / total t;
+		 * hastighet = 2*P(t,y-x,z-y);
+		 */
+		//Flytt til startpunkt
+		move(x1,y1);
+		x = x1;
+		y = y1;
+		penn.ned();
+		for(double t = 0; t < 1;t+=0.05){
+			int x = (int)Math.round(B(t,x1,x2,x3));
+			int y = (int)Math.round(B(t,y1,y2,y3));
+			move(x,y);
+			this.y = y;
+			this.x = x;
+		}
+		penn.opp();
+	}
+	
+	//TODO: Sjekk om metoden kan forkortes
+	private boolean sjekkBue(int h, int x, int y, int xs, int ys, int x1, int y1, int x2, int y2){//Hjelpe metode til tegnBue metoden, sjekker om kordinat er gyldig
+		int diffX = x2-x1;
+		int diffY = y2-y1;
+		if(diffX == 0&&(diffY>0 && x<=xs)||(diffY<0&&x>=xs)){
+			return true;
+		}else if(h>0 && ( (diffX>0 && (x>= xs && y>=y2)||(x<xs&&y>=y1)) || (diffX<0 && (x>= xs && y<=y1)||(x<xs&&y<=y2)))){
+			return true;
+		}else if(h<0 && ( (diffX>0 && (x>=xs && y<=y2)||(x<xs&&y<=y1)) || (diffX<0 && (x>= xs && y>=y1)||(x<xs&&y>=y2)))){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	private double P(double t, double x, double y){//Avstand mellom to punkter basert på tid
 		return (1-t) * x + t * y;
 	}
 	
-	private double B(double t, double x, double y, double z){
+	private double B(double t, double x, double y, double z){//Avstanden mellom tre punkter basert på tid
 		return (1-t) * P(t,x,y) + t * P(t,y,z);
 	}
 	
