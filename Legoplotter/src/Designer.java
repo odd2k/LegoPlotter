@@ -69,8 +69,6 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	//X og Y-koordinater der musen ble trykt ned på tegneområdet
 	int x, y;
 	
-	public boolean shiftPressed = false;
-	
 	JButton btnNy, btnApne, btnLagre, btnPrint, btnAngre, btnGjenta;
 	JToggleButton btnPrikk, btnLinje, btnFirkant, btnSirkel, btnOval, btnGrid;
 	ButtonGroup grpPens;
@@ -208,22 +206,6 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		
 		im.put(KeyStroke.getKeyStroke("control Y"),"gjenta");
 		am.put("gjenta", new GjentaAction(this));
-		
-		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL,0),"shiftPressed");
-		am.put("shiftPressed", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				shiftPressed = true;
-				System.out.println("Shift pressed");
-			}});
-		
-		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, 0, true),"shiftReleased");
-		am.put("shiftReleased", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				shiftPressed = false;
-				System.out.println("Shift released");
-			}});
 		
 
 		frame.add(this, BorderLayout.CENTER);
@@ -424,7 +406,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 			
 				int diff = Math.min(diffX, diffY);
 				
-				if(shiftPressed){
+				if(e.isShiftDown()){
 					if(x2 > x){
 						kommando.setArg(0, x);
 						kommando.setArg(2, diff);

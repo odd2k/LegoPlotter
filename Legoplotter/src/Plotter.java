@@ -19,13 +19,13 @@ public class Plotter{
 	private double hjulDiameter;
 	private double utvekslingX, utvekslingY;
 	
-	private int makshastighet =35; // millimeter per sekund!
+	private int makshastighet =15; // millimeter per sekund!
 	
 	//OBS: Lekeverdier for å teste designer.
 	public static final int margTopp = 63; // mm
 	public static final int margHoyre = 0; // mm
 	public static final int margBunn = 73; // mm
-	public static final int margVenstre = 30; // mm
+	public static final int margVenstre = 20; // mm
 
 	//private boolean pennNede = false; // Her kommer det en pennVelger
 
@@ -49,8 +49,6 @@ public class Plotter{
 		this.motorX = motorX;
 		this.motorX2 = motorX2;
 		
-		System.out.println(motorX.getAcceleration());
-		
 		this.endestoppX = endestoppX;
 		this.endestoppX2 = endestoppX2;
 		this.endestoppY = endestoppY;
@@ -62,11 +60,18 @@ public class Plotter{
 		
 		this.penn = new PennVelger(motorZ);
 		
+		//Plotteren bør gå ganske sakte til home-punktet, hvis ikke hender det at den løper
+		// løpsk og river ned veggene ved endestoppbryterne.
 		setSpeedX(10);
 		setSpeedY(10);
 		
 		home();
 		
+		/*
+		motorX.setAcceleration((int)(200 / utvekslingX));
+		motorX2.setAcceleration((int)(200 / utvekslingX));
+		motorY.setAcceleration((int)(200 / utvekslingY));
+		*/
 		setSpeedX(makshastighet);
 		setSpeedY(makshastighet);
 	}
@@ -119,17 +124,21 @@ public class Plotter{
 		
 		
 		final float SEGMENT_LENGDE = 10; // millimeter... Segmentene blir noe kortere enn dette, men det fungerer.
-		float omkrets = (float)	( 2 * Math.PI * Math.sqrt	(
-																(Math.pow(radiusX, 2) + Math.pow(radiusY, 2) ) / 2 
-															)
-								);
-		float theta = 360 * (SEGMENT_LENGDE / omkrets);
+		float omkrets = (float)	
+						( 2 * Math.PI * Math.sqrt	(
+														(Math.pow(radiusX, 2) + Math.pow(radiusY, 2) ) / 2 
+													)
+						);
+		
+		int antall_segment = (int)(omkrets / SEGMENT_LENGDE);
+		
+		float theta = 360.0f / antall_segment;
 		
 		move(senterX + radiusX, senterY);
 		penn.ned();
 		
-		for(float deg = 0; deg<=360; deg+=theta){
-			double rad = Math.toRadians(deg);
+		for(int i = 0; i<=antall_segment; i++){
+			double rad = Math.toRadians(i*theta);
 			int x = (int) Math.round(senterX + radiusX * Math.cos(rad));
 			int y = (int) Math.round(senterY + radiusY * Math.sin(rad));
 			move(x, y);
@@ -142,14 +151,16 @@ public class Plotter{
 		sjekkMarg(x1-radius,y1-radius,x1+radius,y1+radius);
 		final float SEGMENT_LENGDE = 10; // millimeter... Segmentene blir noe kortere enn dette, men det fungerer.
 		float omkrets = 2 * radius * (float)Math.PI;
-		float theta = 360 * (SEGMENT_LENGDE / omkrets);
+		int antall_segment = (int)(omkrets / SEGMENT_LENGDE);
+		
+		float theta = 360.0f / antall_segment;
 		
 		move(x1 + radius,y1);
 		penn.ned();
 		
-		for(float deg = 0; deg<=360; deg+=theta){
+		for(int i = 0; i <= antall_segment; i++){
 			
-			double rad = Math.toRadians(deg);
+			double rad = Math.toRadians(i*theta);
 			int x = (int) Math.round(x1 + radius * Math.cos(rad));
 			int y = (int) Math.round(y1 + radius * Math.sin(rad));
 			move(x, y);
