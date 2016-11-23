@@ -265,12 +265,19 @@ public class Plotter{
 	}
 	
 	private void home(){
-		boolean x1Hjemme = false;
-		boolean x2Hjemme = false;
-		boolean yHjemme = false;
-		motorY.backward();// bakover er bakover.
-		motorX.forward();// bakover er bakover.
+		boolean x1Hjemme = endestoppXTryktNed();
+		boolean x2Hjemme = endestoppX2TryktNed();
+		boolean yHjemme = endestoppYTryktNed();
+		
+		if(!yHjemme)
+			motorY.backward();// bakover er bakover.
+		
+		if(!x1Hjemme)
+			motorX.forward();// bakover er bakover.
+		
+		if(!x2Hjemme)
 		motorX2.forward();
+		
 		while(!x1Hjemme || !x2Hjemme || !yHjemme){
 			if(endestoppXTryktNed()){
 				motorX.stop();
