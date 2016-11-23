@@ -202,10 +202,14 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		ActionMap am = getActionMap();
 		
 		im.put(KeyStroke.getKeyStroke("control Z"),"angre");
-		am.put("angre", new AngreAction(this));
+		am.put("angre", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) { angre(); }});
 		
 		im.put(KeyStroke.getKeyStroke("control Y"),"gjenta");
-		am.put("gjenta", new GjentaAction(this));
+		am.put("gjenta", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) { gjenta(); }});
 		
 
 		frame.add(this, BorderLayout.CENTER);
@@ -216,15 +220,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 				
 				button.setMargin(new Insets(0,0,0,0));
 			}
-
-			//button.setOpaque(false);
-			//button.setBorder(null);
-			//button.setContentAreaFilled(false);
-			//button.setBorderPainted(false);
-			//button.setContentAreaFilled(false);
 		}
-		
-
 	}
 	
 	public void actionPerformed(ActionEvent e){
@@ -623,38 +619,4 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	}
 	
 
-}
-
-// Brukes for å angre handlinger.
-class AngreAction extends AbstractAction{
-	
-	private static final long serialVersionUID = 3499842459805898252L;
-	Designer designer = null;
-	
-	public AngreAction(Designer designer){
-		this.designer = designer;
-	}
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		designer.angre();
-	}
-	
-}
-
-// Brukes for å gjenta handlinger.
-class GjentaAction extends AbstractAction{
-
-	private static final long serialVersionUID = -41447889653539512L;
-	Designer designer = null;
-	
-	public GjentaAction(Designer designer){
-		this.designer = designer;
-	}
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		designer.gjenta();
-
-	}
 }
