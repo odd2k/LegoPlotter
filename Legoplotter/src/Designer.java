@@ -404,37 +404,11 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 			}
 			else if(btnOval.isSelected()){
 			
-				int diff = Math.min(diffX, diffY);
-				
-				if(e.isShiftDown()){
-					if(x2 > x){
-						kommando.setArg(0, x);
-						kommando.setArg(2, diff);
-					}
-					else{
-						kommando.setArg(2, x);
-						kommando.setArg(0, diff);
-					}
-					
-					if(y2 > y){
-						kommando.setArg(1, y);
-						kommando.setArg(3, diff);
-					}
-					else{
-						kommando.setArg(3, y);
-						kommando.setArg(1, diff);
-					}	
-				}
-				else{
-					kommando.setArg(0, Math.min(x,x2));
-					kommando.setArg(1, Math.min(y,y2));
-					kommando.setArg(2, Math.abs(x - x2));
-					kommando.setArg(3, Math.abs(y - y2));
-				}
+				kommando.setArg(0, Math.min(x,x2));
+				kommando.setArg(1, Math.min(y,y2));
+				kommando.setArg(2, Math.abs(x - x2));
+				kommando.setArg(3, Math.abs(y - y2));
 
-				
-
-				
 			}
 			
 		}
