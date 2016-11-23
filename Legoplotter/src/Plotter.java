@@ -19,12 +19,12 @@ public class Plotter{
 	private double hjulDiameter;
 	private double utvekslingX, utvekslingY;
 	
-	private int makshastighet = 20; // millimeter per sekund!
+	private int makshastighet =35; // millimeter per sekund!
 	
 	//OBS: Lekeverdier for å teste designer.
-	public static final int margTopp = 76; // mm
+	public static final int margTopp = 63; // mm
 	public static final int margHoyre = 0; // mm
-	public static final int margBunn = 63; // mm
+	public static final int margBunn = 73; // mm
 	public static final int margVenstre = 30; // mm
 
 	//private boolean pennNede = false; // Her kommer det en pennVelger
@@ -42,12 +42,14 @@ public class Plotter{
 	
 	public Plotter(NXTRegulatedMotor motorY, NXTRegulatedMotor motorX, NXTRegulatedMotor motorX2, EV3LargeRegulatedMotor motorZ, 
 			NXTTouchSensor endestoppX, NXTTouchSensor endestoppX2, NXTTouchSensor endestoppY, double hjulDiameter, double utvekslingX, double utvekslingY){
-		if(hjulDiameter <= 0){
+		if(hjulDiameter <= 0)
 			throw new IllegalArgumentException("Diameteren paa hjulet kan ikke vaere mindre eller lik 0");
-		}else{
+
 		this.motorY = motorY;
 		this.motorX = motorX;
 		this.motorX2 = motorX2;
+		
+		System.out.println(motorX.getAcceleration());
 		
 		this.endestoppX = endestoppX;
 		this.endestoppX2 = endestoppX2;
@@ -58,13 +60,15 @@ public class Plotter{
 		this.utvekslingX = utvekslingX;
 		this.utvekslingY = utvekslingY;
 		
-		setSpeedX(makshastighet);
-		setSpeedY(makshastighet);
-	
 		this.penn = new PennVelger(motorZ);
-		}
+		
+		setSpeedX(10);
+		setSpeedY(10);
 		
 		home();
+		
+		setSpeedX(makshastighet);
+		setSpeedY(makshastighet);
 	}
 	
 	// Millimeter per sekund på begge aksene
@@ -108,12 +112,26 @@ public class Plotter{
 		sjekkMarg(x1,y1,x1 + bredde,y1 + hoyde);
 		int radiusX = bredde/2;
 		int radiusY = hoyde/2;
-		for(int deg = 0; deg<=360; deg++){
-			if(deg == 0)
-				penn.ned();
+		
+		int senterX = x1 + radiusX;
+		int senterY = y1 + radiusY;
+		
+		
+		
+		final float SEGMENT_LENGDE = 10; // millimeter... Segmentene blir noe kortere enn dette, men det fungerer.
+		float omkrets = (float)	( 2 * Math.PI * Math.sqrt	(
+																(Math.pow(radiusX, 2) + Math.pow(radiusY, 2) ) / 2 
+															)
+								);
+		float theta = 360 * (SEGMENT_LENGDE / omkrets);
+		
+		move(senterX + radiusX, senterY);
+		penn.ned();
+		
+		for(float deg = 0; deg<=360; deg+=theta){
 			double rad = Math.toRadians(deg);
-			int x = (int) Math.round(x1 + (bredde/2) + radiusX * Math.cos(rad));
-			int y = (int) Math.round(y1 + (hoyde/2) + radiusY * Math.sin(rad));
+			int x = (int) Math.round(senterX + radiusX * Math.cos(rad));
+			int y = (int) Math.round(senterY + radiusY * Math.sin(rad));
 			move(x, y);
 		}
 		penn.opp();

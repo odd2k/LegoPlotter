@@ -427,27 +427,27 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 				if(shiftPressed){
 					if(x2 > x){
 						kommando.setArg(0, x);
-						kommando.setArg(2, x+diff);
+						kommando.setArg(2, diff);
 					}
 					else{
 						kommando.setArg(2, x);
-						kommando.setArg(0, x-diff);
+						kommando.setArg(0, diff);
 					}
 					
 					if(y2 > y){
 						kommando.setArg(1, y);
-						kommando.setArg(3, y+diff);
+						kommando.setArg(3, diff);
 					}
 					else{
 						kommando.setArg(3, y);
-						kommando.setArg(1, y-diff);
+						kommando.setArg(1, diff);
 					}	
 				}
 				else{
 					kommando.setArg(0, Math.min(x,x2));
 					kommando.setArg(1, Math.min(y,y2));
-					kommando.setArg(2, Math.max(x,x2));
-					kommando.setArg(3, Math.max(y,y2));
+					kommando.setArg(2, Math.abs(x - x2));
+					kommando.setArg(3, Math.abs(y - y2));
 				}
 
 				
@@ -641,8 +641,8 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 				
 				x1 = skalerOppX(args[0]+Plotter.margVenstre);
 				y1 = skalerOppY(args[1]+Plotter.margTopp);
-				int bredde = skalerOppX(args[2]-args[0]);
-				int hoyde = skalerOppY(args[3]-args[1]);
+				int bredde = skalerOppX(args[2]);
+				int hoyde = skalerOppY(args[3]);
 				
 				g2d.drawOval(x1, y1, bredde, hoyde);
 				break;
