@@ -52,7 +52,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	private static final long serialVersionUID = -1383411119408529184L;
 	
 	// Valg av farger til tegning. Grensesnittet utvides automatisk når tabellen utvides.
-	private final Color[] FARGER = new Color[]{Color.BLACK, Color.RED, Color.GREEN};
+	private final Color[] FARGER = new Color[]{Color.BLACK, Color.RED, Color.BLUE};
 	
 	//Kommandoer som tegnes på skjermen, og evt. sendes til plotter
 	public KommandoListe kommandoer = new KommandoListe();
