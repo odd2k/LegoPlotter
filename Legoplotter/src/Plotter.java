@@ -21,7 +21,7 @@ public class Plotter{
 	
 	private int makshastighet =15; // millimeter per sekund!
 	
-	//OBS: Lekeverdier for å teste designer.
+	//OBS: Lekeverdier for Ã¥ teste designer.
 	public static final int margTopp = 63; // mm
 	public static final int margHoyre = 0; // mm
 	public static final int margBunn = 73; // mm
@@ -35,7 +35,7 @@ public class Plotter{
 	private NXTTouchSensor endestoppX, endestoppX2;
 	private NXTTouchSensor endestoppY;
 
-	// Brukes for å mellomlagre innleste verdier fra touch-sensorer
+	// Brukes for Ã¥ mellomlagre innleste verdier fra touch-sensorer
 	private float[] sample = new float[1];
 	
 	private PennVelger penn;
@@ -60,8 +60,8 @@ public class Plotter{
 		
 		this.penn = new PennVelger(motorZ);
 		
-		//Plotteren bør gå ganske sakte til home-punktet, hvis ikke hender det at den løper
-		// løpsk og river ned veggene ved endestoppbryterne.
+		//Plotteren bÃ¸r gÃ¥ ganske sakte til home-punktet, hvis ikke hender det at den lÃ¸per
+		// lÃ¸psk og river ned veggene ved endestoppbryterne.
 		setSpeedX(10);
 		setSpeedY(10);
 		
@@ -76,7 +76,7 @@ public class Plotter{
 		setSpeedY(makshastighet);
 	}
 	
-	// Millimeter per sekund på begge aksene
+	// Millimeter per sekund pÃ¥ begge aksene
 	public void settMakshastighet(int makshastighet){
 		this.makshastighet = makshastighet;
 	}
@@ -146,7 +146,7 @@ public class Plotter{
 		penn.opp();
 	}
 	
-	//TODO: Finn en annen løsning
+	//TODO: Finn en annen lÃ¸sning
 	public void tegnSirkel(int x1, int y1, int radius){
 		sjekkMarg(x1-radius,y1-radius,x1+radius,y1+radius);
 		final float SEGMENT_LENGDE = 10; // millimeter... Segmentene blir noe kortere enn dette, men det fungerer.
@@ -171,7 +171,7 @@ public class Plotter{
 	
 	
 
-	//TODO: Test metoden! TODO: Kommenter bedre
+	//TODO: Test metoden! Metoden brukes ikke
 	public void tegnBue(int x1, int y1, int x2, int y2, int h){//Tegner en del av en sirkel
 		//Radius til sirkelen
 		double radius = ((4*Math.pow(h, 2))+(Math.pow((x2-x1),2)+Math.pow((y2-y1),2)))/(8*h);
@@ -198,7 +198,7 @@ public class Plotter{
 		ArrayList<Integer> kordinatX = new ArrayList<Integer>();
 		ArrayList<Integer> kordinatY = new ArrayList<Integer>();
 		
-		/* En annen måte metoden kunne basert seg på.
+		/* En annen mÃ¥te metoden kunne basert seg pÃ¥.
 		double tLengde = Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2))/2;
 		int gradBue = (int) Math.round(Math.asin(tLengde/radius)*2);
 		int gradStart = (int) Math.round(Math.asin((y2-ys)/radius));
@@ -250,8 +250,8 @@ public class Plotter{
 	}
 	
 	
-	//TODO: Test metoden!
-	public void tegnBue2Motor(int x1, int y1, int x2, int y2, int x3, int y3) throws InterruptedException{//Tegner en bue basert på tre inviduelle punkter
+	//TODO: Test metoden! Metoden brukes ikke
+	public void tegnBue2Motor(int x1, int y1, int x2, int y2, int x3, int y3) throws InterruptedException{//Tegner en bue basert pÃ¥ tre inviduelle punkter
 		/* t= tid = delta t / total t;
 		 * hastighet = 2*P(t,y-x,z-y);
 		 */
@@ -296,8 +296,8 @@ public class Plotter{
 		motorX2.stop();
 		motorY.stop();
 	}
-	
-	public void tegnBue2(int x1, int y1, int x2, int y2, int x3, int y3) throws InterruptedException{//Tegner en bue basert på tre inviduelle punkter
+	//TODO: Test metoden! Metoden brukes ikke
+	public void tegnBue2(int x1, int y1, int x2, int y2, int x3, int y3) throws InterruptedException{//Tegner en bue basert pÃ¥ tre inviduelle punkter
 		/* t= tid = delta t / total t;
 		 * hastighet = 2*P(t,y-x,z-y);
 		 */
@@ -316,7 +316,7 @@ public class Plotter{
 		penn.opp();
 	}
 	
-	//TODO: Sjekk om metoden kan forkortes
+	//TODO: Sjekk om metoden kan forkortes, feil i metoden.
 	private boolean sjekkBue(int h, int x, int y, int xs, int ys, int x1, int y1, int x2, int y2){//Hjelpe metode til tegnBue metoden, sjekker om kordinat er gyldig
 		int diffX = x2-x1;
 		int diffY = y2-y1;
@@ -330,12 +330,12 @@ public class Plotter{
 			return false;
 		}
 	}
-	
-	private double P(double t, double x, double y){//Avstand mellom to punkter basert på tid
+	//Avstand mellom to punkter basert pÃ¥ tid
+	private double P(double t, double x, double y){
 		return (1-t) * x + t * y;
 	}
-	
-	private double B(double t, double x, double y, double z){//Avstanden mellom tre punkter basert på tid
+	//Avstanden mellom tre punkter basert pÃ¥ tid
+	private double B(double t, double x, double y, double z){
 		return (1-t) * P(t,x,y) + t * P(t,y,z);
 	}
 	
@@ -373,12 +373,12 @@ public class Plotter{
 		y = 0;
 	}
 	
-	// Returnerer bredde på det området på arket som ligger innenfor margene
+	// Returnerer bredde pÃ¥ det omrÃ¥det pÃ¥ arket som ligger innenfor margene
 	public static int getBredde(){
 		return A4_X - (margVenstre + margHoyre);
 	}
 	
-	// Returnerer høyde på det området på arket som ligger innenfor margene
+	// Returnerer hÃ¸yde pÃ¥ det omrÃ¥det pÃ¥ arket som ligger innenfor margene
 	public static int getHoyde(){
 		return A4_Y - (margTopp + margBunn);
 	}
@@ -389,9 +389,9 @@ public class Plotter{
 		int lengdeX = x1 - x;
 		int lengdeY = y1 - y;
 		
-		// Om bevegelse i X-retning er 3 ganger større enn i y-retning, skal
-		// motor Y bevege seg 3 ganger så langsomt som X.
-		// Om den ene bevegelsen er 0, er ikke dette så nøye.
+		// Om bevegelse i X-retning er 3 ganger stÃ¸rre enn i y-retning, skal
+		// motor Y bevege seg 3 ganger sÃ¥ langsomt som X.
+		// Om den ene bevegelsen er 0, er ikke dette sÃ¥ nÃ¸ye.
 		
 		if(Math.abs(lengdeX) > Math.abs(lengdeY) && lengdeX != 0){
 			setSpeedX(makshastighet);
@@ -424,26 +424,26 @@ public class Plotter{
 		int hoyde = getHoyde();
 		if(x1 != x2 && y1 != y2){
 			if(sjekk(x1,y1) && sjekk(x2,y2)){
-			throw new IllegalArgumentException("X og Y-verdier utenfor område! x1: " + x1 + " x2: " + x2 + " bredde: " + bredde + " y1: " + y1 + " y2: " + y2 + "hoyde: " + hoyde);
+			throw new IllegalArgumentException("X og Y-verdier utenfor omrÃ¥de! x1: " + x1 + " x2: " + x2 + " bredde: " + bredde + " y1: " + y1 + " y2: " + y2 + "hoyde: " + hoyde);
 			}
 		}
 		else if(sjekk(x1,y1)){
-			throw new IllegalArgumentException("X og Y-verdier utenfor område! x1: " + x1 + " bredde: " + bredde + " y1: " + y1 + "hoyde: " + hoyde);
+			throw new IllegalArgumentException("X og Y-verdier utenfor omrÃ¥de! x1: " + x1 + " bredde: " + bredde + " y1: " + y1 + "hoyde: " + hoyde);
 		}
 		else if(sjekk(x2,y2)){
-			throw new IllegalArgumentException("X og Y-verdier utenfor område! x2: " + x2 + " bredde: " + bredde + " y2: " + y2 + "hoyde: " + hoyde);
+			throw new IllegalArgumentException("X og Y-verdier utenfor omrÃ¥de! x2: " + x2 + " bredde: " + bredde + " y2: " + y2 + "hoyde: " + hoyde);
 		}
 		else if(sjekkX(x1)){
-			throw new IllegalArgumentException("X-verdi utenfor område! x1: " + x1 + " bredde: " + bredde);
+			throw new IllegalArgumentException("X-verdi utenfor omrÃ¥de! x1: " + x1 + " bredde: " + bredde);
 		}
 		else if(sjekkX(x2)){
-			throw new IllegalArgumentException("X-verdi utenfor område! x2: " + x2 + " bredde: " + bredde);
+			throw new IllegalArgumentException("X-verdi utenfor omrÃ¥de! x2: " + x2 + " bredde: " + bredde);
 		}
 		else if(sjekkY(y1)){
-			throw new IllegalArgumentException("Y-verdi utenfor område! y1: " + y1 + " høyde: " + hoyde);
+			throw new IllegalArgumentException("Y-verdi utenfor omrÃ¥de! y1: " + y1 + " hÃ¸yde: " + hoyde);
 		}
 		else if(sjekkY(y2)){
-			throw new IllegalArgumentException("Y-verdi utenfor område! y2: " + y2 + " høyde: " + hoyde);
+			throw new IllegalArgumentException("Y-verdi utenfor omrÃ¥de! y2: " + y2 + " hÃ¸yde: " + hoyde);
 		}
 	}
 	
@@ -480,42 +480,42 @@ public class Plotter{
 		return (sample[0]==1);
 	}
 
-	//Konverterer fra omdreining på motor i grader til forflytning på arket i millimeter.
+	//Konverterer fra omdreining pÃ¥ motor i grader til forflytning pÃ¥ arket i millimeter.
 	private int graderTilMillimeter(int grader, double utveksling){
 		int millimeter = (int)Math.round((Math.PI * hjulDiameter * grader * utveksling) / (360));
 		return millimeter;
 	}
 	
-	//Konverterer fra forflytning på arket i millimeter til omdreining på motor i grader.
+	//Konverterer fra forflytning pÃ¥ arket i millimeter til omdreining pÃ¥ motor i grader.
 	private int millimeterTilGrader(int millimeter, double utveksling){
 		int grader = (int)Math.round((360 * millimeter) / (Math.PI * hjulDiameter * utveksling));
 		return grader;
 	}
 	
-	//Setter hastighet på x-aksen, i millimeter per sekund
-	public void setSpeedX(double mmps){
+	//Setter hastighet pÃ¥ x-aksen, i millimeter per sekund
+	private void setSpeedX(double mmps){
 		motorX.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
 		motorX2.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingX));
 	}
 	
-	//Setter hastighet på y-aksen, i millimeter per sekund
-	public void setSpeedY(double mmps){
+	//Setter hastighet pÃ¥ y-aksen, i millimeter per sekund
+	private void setSpeedY(double mmps){
 		motorY.setSpeed(millimeterTilGrader((int)Math.round(mmps), utvekslingY));
 	}
 	
-	//Beveger akse Y gitt antall millimeter. OBS: metoden returnerer umiddelbart uten å vente på fullført bevegelse.
-	public void moveY(int mm){
+	//Beveger akse Y gitt antall millimeter. OBS: metoden returnerer umiddelbart uten Ã¥ vente pÃ¥ fullfÃ¸rt bevegelse.
+	private void moveY(int mm){
 		int grader = millimeterTilGrader(mm, utvekslingY);
 		motorY.rotate(grader, true);
 	}
 	
-	//Beveger akse X gitt antall millimeter. OBS: metoden returnerer umiddelbart uten å vente på fullført bevegelse.
-	public void moveX(int mm){
+	//Beveger akse X gitt antall millimeter. OBS: metoden returnerer umiddelbart uten Ã¥ vente pÃ¥ fullfÃ¸rt bevegelse.
+	private void moveX(int mm){
 		motorX.rotate(-millimeterTilGrader(mm, utvekslingX), true);
 		motorX2.rotate(-millimeterTilGrader(mm, utvekslingX), true);
 	}
 	
-	// Brukes for å motta kommandoer over nettverket.
+	// Brukes for Ã¥ motta kommandoer over nettverket.
 	// TODO: Implementer pennvelger-funksjonalitet
 	public void utforKommando(Kommando kommando){
 		
@@ -556,7 +556,7 @@ public class Plotter{
 		}
 	}
 	
-	// Utfører flere kommandoer
+	// UtfÃ¸rer flere kommandoer
 	public void utforKommandoer(KommandoListe kommandoer){
 		System.out.println("Utforer " + kommandoer.size() + " kommandoer");
 		for(Kommando kommando : kommandoer){
