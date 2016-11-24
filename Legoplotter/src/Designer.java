@@ -51,25 +51,25 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 
 	private static final long serialVersionUID = -1383411119408529184L;
 	
-	// Valg av farger til tegning. Grensesnittet utvides automatisk når tabellen utvides.
+	// Valg av farger til tegning. Grensesnittet utvides automatisk nÃ¥r tabellen utvides.
 	private final Color[] FARGER = new Color[]{Color.BLACK, Color.RED, Color.BLUE};
 	
-	//Kommandoer som tegnes på skjermen, og evt. sendes til plotter
+	//Kommandoer som tegnes pÃ¥ skjermen, og evt. sendes til plotter
 	public KommandoListe kommandoer = new KommandoListe();
 	
 	//Kommandoer som brukeren har angret. Kan evt. gjentas
 	public KommandoListe angre_kommandoer = new KommandoListe();
 	
-	//Kommandoen som er i ferd med å bli tegnet.
-	Kommando kommando = null;
+	//Kommandoen som er i ferd med Ã¥ bli tegnet.
+	public Kommando kommando = null;
 	
-	//Holder programmet på å sende data til printeren?
+	//Holder programmet pÃ¥ Ã¥ sende data til printeren?
 	public boolean printing = false;
 	
-	//X og Y-koordinater der musen ble trykt ned på tegneområdet
+	//X og Y-koordinater der musen ble trykt ned pÃ¥ tegneomrÃ¥det
 	int x, y;
 	
-	JButton btnNy, btnApne, btnLagre, btnPrint, btnAngre, btnGjenta;
+	public JButton btnNy, btnApne, btnLagre, btnPrint, btnAngre, btnGjenta;
 	JToggleButton btnPrikk, btnLinje, btnFirkant, btnSirkel, btnOval, btnGrid;
 	ButtonGroup grpPens;
 	
@@ -109,7 +109,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		
 		btnApne = new JButton(new ImageIcon("icons\\directory.png"));
 		btnApne.setActionCommand("apne");
-		btnApne.setToolTipText("Åpne fil");
+		btnApne.setToolTipText("Ã…pne fil");
 		btnApne.addActionListener(this);
 		toolBar.add(btnApne);
 		
@@ -188,7 +188,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 			toolBar.add(btn);
 			grpPens.add(btn);
 			
-			//Trykk inn den første farge-knappen
+			//Trykk inn den fÃ¸rste farge-knappen
 			if(i == 0)
 				btn.setSelected(true);
 		}
@@ -251,7 +251,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 					} catch (Exception e1) {}
 	        		
 	        			String errormsg = 	"Kunne ikke koble til plotter!\n" +
-	        								"Plotteren svarer " + (reachable ? "" : "IKKE ") + "på ping.";
+	        								"Plotteren svarer " + (reachable ? "" : "IKKE ") + "pÃ¥ ping.";
 		        		
 		        		JOptionPane.showMessageDialog(null, errormsg, "Tilkoblingsfeil", JOptionPane.ERROR_MESSAGE);
 		        	}
@@ -317,7 +317,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	}
 
 	// Finn ut hvilken penn som er valgt ut fra trykknappene (brukes som index mot FARGER[], og 
-	// sendes også over til plotteren som en del av kommandodataene).
+	// sendes ogsÃ¥ over til plotteren som en del av kommandodataene).
 	int getCurPen(){
 		
 		Enumeration<AbstractButton> buttons = grpPens.getElements();
@@ -337,7 +337,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		return 1;
 	}
 	
-	//Musen ble trykt inn. Begynn å tegne ny figur.
+	//Musen ble trykt inn. Begynn Ã¥ tegne ny figur.
 	@Override
 	public void mousePressed(MouseEvent e){
 		if(SwingUtilities.isLeftMouseButton(e)){
@@ -366,7 +366,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 			
 			int y2 = skalerNedY(e.getY()) - Plotter.margTopp;
 			
-			// Distanse mellom punkt der musen ble trykt ned, og punktet der musepekeren er nå.
+			// Distanse mellom punkt der musen ble trykt ned, og punktet der musepekeren er nÃ¥.
 			int diffX = Math.abs(x2 - x);
 			int diffY = Math.abs(y2 - y);
 			
@@ -437,21 +437,21 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	@Override
 	public void mouseClicked(MouseEvent e) {}
 	
-	// Oversetter fra Y-koordinat på A4-ark til y-koordinat på skjerm
+	// Oversetter fra Y-koordinat pÃ¥ A4-ark til y-koordinat pÃ¥ skjerm
 	public int skalerOppX(int x){
 		double skaleringX = (double)getWidth() / Plotter.A4_X;
 		
 		return (int)Math.round(x * skaleringX);
 	}
 	
-	// Oversetter fra Y-koordinat på A4-ark til y-koordinat på skjerm
+	// Oversetter fra Y-koordinat pÃ¥ A4-ark til y-koordinat pÃ¥ skjerm
 	public int skalerOppY(int y){
 		double skaleringY = (double)getHeight() / Plotter.A4_Y;
 		
 		return (int)Math.round(y*skaleringY);
 	}
 	
-	// Oversetter fra X-koordinat på skjerm til y-koordinat på A4-ark
+	// Oversetter fra X-koordinat pÃ¥ skjerm til y-koordinat pÃ¥ A4-ark
 	public int skalerNedX(int x){
 		double skaleringX = (double)getWidth() / Plotter.A4_X;
 		
@@ -462,7 +462,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		return x;
 	}
 
-	// Oversetter fra Y-koordinat på skjerm til y-koordinat på A4-ark
+	// Oversetter fra Y-koordinat pÃ¥ skjerm til y-koordinat pÃ¥ A4-ark
 	public int skalerNedY(int y){
 		double skaleringY = (double)getHeight() / Plotter.A4_Y;
 		 
@@ -526,7 +526,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 			utforKommando(kommando, g2d);
 		}
 		
-		//Kommandoen som evt. tegnes i dette øyeblikk, mens brukeren holder nede musen.
+		//Kommandoen som evt. tegnes i dette Ã¸yeblikk, mens brukeren holder nede musen.
 		if(kommando != null){
 			utforKommando(kommando, g2d);
 		}
@@ -540,7 +540,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 				this.getHeight() - skalerOppY(Plotter.margTopp + Plotter.margBunn));
 	}
 	
-	// Tegn gitt kommando på skjermen.
+	// Tegn gitt kommando pÃ¥ skjermen.
 	public void utforKommando(Kommando kommando, Graphics2D g2d){
 		
 		Kommando.KommandoType type = kommando.getType();
