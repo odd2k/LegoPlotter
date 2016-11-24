@@ -55,21 +55,21 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	private final Color[] FARGER = new Color[]{Color.BLACK, Color.RED, Color.BLUE};
 	
 	//Kommandoer som tegnes på skjermen, og evt. sendes til plotter
-	public KommandoListe kommandoer = new KommandoListe();
+	private KommandoListe kommandoer = new KommandoListe();
 	
 	//Kommandoer som brukeren har angret. Kan evt. gjentas
-	public KommandoListe angre_kommandoer = new KommandoListe();
+	private KommandoListe angre_kommandoer = new KommandoListe();
 	
 	//Kommandoen som er i ferd med å bli tegnet.
-	public Kommando kommando = null;
+	private Kommando kommando = null;
 	
 	//Holder programmet på å sende data til printeren?
-	public boolean printing = false;
+	private boolean printing = false;
 	
 	//X og Y-koordinater der musen ble trykt ned på tegneområdet
-	int x, y;
+	private int x, y;
 	
-	public JButton btnNy, btnApne, btnLagre, btnPrint, btnAngre, btnGjenta;
+	private JButton btnNy, btnApne, btnLagre, btnPrint, btnAngre, btnGjenta;
 	JToggleButton btnPrikk, btnLinje, btnFirkant, btnSirkel, btnOval, btnGrid;
 	ButtonGroup grpPens;
 	
@@ -315,27 +315,6 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 		repaint();
 
 	}
-
-	// Finn ut hvilken penn som er valgt ut fra trykknappene (brukes som index mot FARGER[], og 
-	// sendes også over til plotteren som en del av kommandodataene).
-	int getCurPen(){
-		
-		Enumeration<AbstractButton> buttons = grpPens.getElements();
-		AbstractButton button = null; 
-		int curButton = 1;
-	
-		while(buttons.hasMoreElements()){
-			button = buttons.nextElement();
-			
-			if(button.isSelected())
-				return curButton;
-			
-			curButton++;
-		}
-		
-		// Ingen av fargeknappene er valgt. Merkelig. Vi returnerer 1, som er vanlig svart.
-		return 1;
-	}
 	
 	//Musen ble trykt inn. Begynn å tegne ny figur.
 	@Override
@@ -437,22 +416,43 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	@Override
 	public void mouseClicked(MouseEvent e) {}
 	
+	
+	// Finn ut hvilken penn som er valgt ut fra trykknappene (brukes som index mot FARGER[], og 
+	// sendes også over til plotteren som en del av kommandodataene).
+	private int getCurPen(){
+		
+		Enumeration<AbstractButton> buttons = grpPens.getElements();
+		AbstractButton button = null; 
+		int curButton = 1;
+	
+		while(buttons.hasMoreElements()){
+			button = buttons.nextElement();
+			
+			if(button.isSelected())
+				return curButton;
+			
+			curButton++;
+		}
+		
+		// Ingen av fargeknappene er valgt. Merkelig. Vi returnerer 1, som er vanlig svart.
+		return 1;
+	}
 	// Oversetter fra Y-koordinat på A4-ark til y-koordinat på skjerm
-	public int skalerOppX(int x){
+	private int skalerOppX(int x){
 		double skaleringX = (double)getWidth() / Plotter.A4_X;
 		
 		return (int)Math.round(x * skaleringX);
 	}
 	
 	// Oversetter fra Y-koordinat på A4-ark til y-koordinat på skjerm
-	public int skalerOppY(int y){
+	private int skalerOppY(int y){
 		double skaleringY = (double)getHeight() / Plotter.A4_Y;
 		
 		return (int)Math.round(y*skaleringY);
 	}
 	
 	// Oversetter fra X-koordinat på skjerm til y-koordinat på A4-ark
-	public int skalerNedX(int x){
+	private int skalerNedX(int x){
 		double skaleringX = (double)getWidth() / Plotter.A4_X;
 		
 		x = (int)Math.round(x/skaleringX);
@@ -463,7 +463,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	}
 
 	// Oversetter fra Y-koordinat på skjerm til y-koordinat på A4-ark
-	public int skalerNedY(int y){
+	private int skalerNedY(int y){
 		double skaleringY = (double)getHeight() / Plotter.A4_Y;
 		 
 		y =  (int)Math.round(y/skaleringY);
@@ -474,7 +474,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	}
 	
 	// Flytt kommandoer fra angre-lista og tilbake til kommandolista
-	public void angre(){
+	private void angre(){
 		if(!kommandoer.isEmpty()){
 			angre_kommandoer.add(kommandoer.get(kommandoer.size()-1));
 			kommandoer.remove(kommandoer.size()-1);
@@ -488,7 +488,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	}
 	
 	// "Angre" angre-funksjonen.
-	public void gjenta(){
+	private void gjenta(){
 		if(!angre_kommandoer.isEmpty()){
 			kommandoer.add(angre_kommandoer.get(angre_kommandoer.size()-1));
 			angre_kommandoer.remove(angre_kommandoer.size()-1);
@@ -541,7 +541,7 @@ public class Designer extends JPanel implements ActionListener, MouseListener, M
 	}
 	
 	// Tegn gitt kommando på skjermen.
-	public void utforKommando(Kommando kommando, Graphics2D g2d){
+	private void utforKommando(Kommando kommando, Graphics2D g2d){
 		
 		Kommando.KommandoType type = kommando.getType();
 		int[] args = kommando.getArgs();
